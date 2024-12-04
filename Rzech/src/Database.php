@@ -10,8 +10,6 @@ ini_set('display_errors', '1');
 require_once("config/Exceptions/StorageException.php");
 require_once("config/Exceptions/ConfigException.php");
 
-$configuration = require_once("config/config.php");
-
 use PDO;
 use Exception;
 use App\StorageException;
@@ -25,8 +23,7 @@ class Database
     public function __construct(array $config)
     {
         $this->validateConfig($config);
-        $this->config = $config
-        ;
+        $this->config = $config;
         $database = $this->config['database'];
         $host = $this->config['host'];
         $dsn = "mysql:dbname=$database;host=$host";
@@ -69,22 +66,240 @@ class Database
         PDO:FETCH_ASSOC - argument sprawia że funkcje fetch/fetchAll zwrócą wynik
         w postaci tablicy asocjacyjnej (kluczami w rekordzie są nazwy pól) */
     }
-}
+
+    public function countAd(array $filters) : int
+    {
+        if(empty($filters))
+        {
+            $sql = $this->connection->prepare('SELECT COUNT(*) AS Ilosc FROM Ad');
+
+            $sql->execute();
+            $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+            $wynik = (int)$wynik['Ilosc'];
+
+            return $wynik;
+        }
 
 
-try
-{
-    $db = new Database($configuration['db']);
-    echo $db->isUserExist('xardas2137');
+        if(!isset($filters['brand']) || !isset($filters['model'])
+           || !isset($filters['priceFloor']) || !isset($filters['priceRoof'])
+           || !isset($filters['productionDate']) || !isset($filters['fuel'])
+           || !isset($filters['bodyType']))
+        {
+            throw new StorageException('Nie udało się pobrać listy aut o podanych kryteriach!'); 
+        }
+
+
+        
+        $brand = $filters['brand'];
+        $model = $filters['model'];
+        $priceFloor = $filters['priceFloor'];
+        $priceRoof = $filters['priceRoof'];
+        $productionDate = $filters['productionDate'];
+        $fuel = $filters['fuel'];
+        $bodyType = $filters['bodyType'];
+
+        
+        $sql = $this->connection->prepare
+        ("SELECT COUNT(*) AS Ilosc
+          FROM Ad LEFT JOIN AdDetails ON (detailsID = adDetailsID) LEFT JOIN BrandModel ON (brandmodelID = IDBrandModel)
+          LEFT JOIN BodyType ON(bodyType = bodyTypeID) LEFT JOIN Fuel ON (fuel = fuelID)
+          WHERE brand = :brand AND model = :model AND bodyTypeName = :bodyType
+          AND fuelName = :fuel AND ProductionDate = :productionDate
+          AND Price BETWEEN :priceFloor AND :priceRoof"
+          );
+        
+          
+          $sql->bindParam(':brand',$brand);
+          $sql->bindParam(':model',$model);
+          $sql->bindParam(':priceFloor',$priceFloor);
+          $sql->bindParam(':priceRoof',$priceRoof);
+          $sql->bindParam(':productionDate',$productionDate);
+          $sql->bindParam(':fuel',$fuel);
+          $sql->bindParam(':bodyType',$bodyType);
+
+        
+          $sql->execute();
+
+          $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+          $wynik = (int)$wynik['Ilosc'];
+
+          return $wynik;
+     
+    }
+
+    public function countPages(array $filters,int $adsOnPage) : int
+    {
+        $numberOfAds = $this->countAd($filters);
+        if($numberOfAds <= 0 || $adsOnPage <=0)
+        {
+            return 0;
+        }
+
+        $count = $numberOfAds/$adsOnPage;
+
+        if($numberOfAds%$adsOnPage == 0)
+        {
+            return (int)$count;
+        }
+
+        return (int)$count+1;
+    }
+
+    public function getAdsPage(array $filters,int $adsOnPage, int $page) : array
+    {
+        if($adsOnPage <=0 || $page<=0)
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+
+        $limit = $adsOnPage;
+        $offset = ($page-1)*$adsOnPage;
+        $wynik = [];
+
+
+        if(empty($filters))
+        {
+            $sql = $this->connection->prepare("SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price
+                                              FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                              LEFT JOIN Advertiser ON (adOwner = userID)
+                                              WHERE blockStatus = 0 AND adStatus = 1
+                                              LIMIT $limit OFFSET $offset");
+            $sql->execute();
+
+            $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+            return $wynik;
+        }
+
+        $brand = $filters['brand'];
+        $model = $filters['model'];
+        $priceFloor = $filters['priceFloor'];
+        $priceRoof = $filters['priceRoof'];
+        $productionDate = $filters['productionDate'];
+        $fuel = $filters['fuel'];
+        $bodyType = $filters['bodyType'];
+
+        
+
+        $sql = $this->connection->prepare("SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price
+                                           FROM Ad LEFT JOIN AdDetails ON (detailsID = adDetailsID) 
+                                           LEFT JOIN BrandModel ON (brandmodelID = IDBrandModel)
+                                           LEFT JOIN BodyType ON(bodyType = bodyTypeID) 
+                                           LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE brand = :brand AND model = :model AND bodyTypeName = :bodyType
+                                           AND fuelName = :fuel AND ProductionDate = :productionDate
+                                           AND Price BETWEEN :priceFloor AND :priceRoof
+                                           LIMIT $limit OFFSET $offset");
+
+        
+
+        $sql->bindParam(':brand',$brand);
+        $sql->bindParam(':model',$model);
+        $sql->bindParam(':priceFloor',$priceFloor);
+        $sql->bindParam(':priceRoof',$priceRoof);
+        $sql->bindParam(':productionDate',$productionDate);
+        $sql->bindParam(':fuel',$fuel);
+        $sql->bindParam(':bodyType',$bodyType);
+
+        
+
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        if(empty($wynik))
+        {
+            throw new StorageException('Strona nie istnieje!');
+        }
+
+        return $wynik;
+    }
+
+    public function getAdPagination(array $filters,int $adsOnPage,int $page) : array
+    {
+
+        if($adsOnPage <=0 || $page<=0)
+        {
+            throw new StorageException('Nie udało się pobrać paginacji. Skontaktuj się z administratorem!');
+        }
+
+        $adCount = $this->countAd($filters);
+        $pageCount = $this->countPages($filters,$adsOnPage);
+
+        $pagination = [];
+        
+        $i = $page;
+        $j = 5;
+        while($i>1 && $j>1)
+        {
+            $i--;
+            $j--;
+
+        }
+        
+
+        
+        $j=10;
+
+        while($i<=$pageCount && $j>1)
+        {
+            $pagination[] = $i;
+            $i++;
+            $j--;
+        }
+        
+        if(empty($pagination))
+        {
+            throw new StorageException('Nie udało się pobrać paginacji. Skontaktuj się z administratorem!');
+        }
+
+        return $pagination;
+    }
+
+    public function getBrandList() : array
+    {
+        $sql = $this->connection->prepare('SELECT DISTINCT brand
+                                           FROM BrandModel');
+        
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function getModelList() : array
+    {
+        $sql = $this->connection->prepare('SELECT DISTINCT model
+                                           FROM BrandModel');
+        
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function getFuelList() : array
+    {
+        $sql = $this->connection->prepare('SELECT FuelName
+                                           FROM Fuel');
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function getBodyTypeList() : array
+    {
+        $sql = $this->connection->prepare('SELECT bodyTypeName
+                                           FROM BodyType');
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+          
 }
-catch (StorageException $e)
-{
-    echo $e->getMessage();
-}
-catch (ConfigException $e)
-{
-    echo $e->getMessage();
-}
+
 
 
 

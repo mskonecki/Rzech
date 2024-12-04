@@ -1,0 +1,589 @@
+
+
+@font-face{
+    font-family: joseph;
+    src:url(fonts/JosefinSans-VariableFont_wght.ttf);
+}
+
+
+*
+{
+    font-family: joseph;
+    font-size: 24px;
+}
+
+
+body
+{
+    background-color: #B1C4D8;
+    margin: 0px;
+    padding: 0px;
+}
+
+#navbar
+{
+    background-color: #1B232B;
+    width: 100%;
+    min-height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#navbar a
+{
+    text-align: none;
+    color: white;
+    text-decoration: none;
+}
+
+#navbar-options
+{
+    display: flex;
+    justify-content:space-between;
+    flex-wrap: wrap;
+    margin-right: 5px;
+    flex-grow:1
+}
+
+#navbar-space
+{
+    flex-grow:8;
+}
+
+#phone-navbar
+{
+    display: none;
+}
+
+#navbar2
+{
+    display:flex;
+    flex-wrap: wrap;
+    background-color: #1B232B;
+    width: 100%;
+    min-height: 80px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#navbar2 a
+{
+    text-align: none;
+    color: white;
+    text-decoration: none;
+}
+
+#hamburger
+{
+    width: fit-content;
+    height: fit-content;
+    padding-left: 20px;
+    color: white;
+    cursor: pointer;
+}
+
+#hamburger > .icon-menu
+{
+    font-size: 34px;
+}
+
+#phone-nav-ham
+{
+    display: none;
+    flex-direction: column;
+}
+
+#ham-account
+{
+    padding-top: 10px;
+    text-align: center;
+    background-color: #2A3744;
+    height: fit-content;
+}
+
+#ham-account a
+{
+    color: white;
+}
+
+#ham-ad
+{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: fit-content;
+    text-align: center;
+    background-color: #2A3744;
+}
+
+#ham-ad a
+{
+    color: white;
+}
+
+.logo
+{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-grow: 1;
+}
+
+#account-link
+{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-grow: 1;
+}
+
+.action-button
+{
+    border: white solid 1px;
+    border-radius: 5px;
+    cursor:pointer;  
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.action-button:hover
+{
+    background-color:#2A3744;
+}
+
+#search-area
+{
+    min-height: 100px;
+    background-color: #668EAB;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 20px;
+}
+
+#search-engine
+{
+    margin-top: 20px;
+    margin-bottom: 30px;
+    max-width: 60%;
+}
+
+#search-fields
+{
+    padding: 8px;
+    background-color: #1B232B;
+    border: white 1px solid;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.search-field
+{
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-right: 8px;
+    margin-left: 4px;
+    flex-grow: 1;
+}
+
+.search-field input
+{
+    border-radius: 5px;
+    background-color: #B1C4D8;
+    width: 98%;
+}
+
+.search-field select
+{
+    border-radius: 5px;
+    background-color: #B1C4D8;
+    width: 100%;
+}
+
+#search-accept
+{
+    display: flex;
+    justify-content: center;
+    background-color: #668EAB;
+}
+
+#search-button
+{
+    max-width: 366px;
+    width: 98%;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+#search-button button[type=submit]
+{
+    width: 100%;
+    border: white solid 1px;
+    color: white;
+    background-color: #1B232B;
+    border-radius: 5px;
+    cursor:pointer;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    font-size: fit-content; 
+    overflow:hidden;
+}
+
+#search-button:hover
+{
+    background-color: pink;
+}
+
+#ads-content
+{
+    background-color: #DDE5F4;
+    display:flex;
+    justify-content: center;
+}
+
+#ads-content-container
+{
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1014px;
+    background-color: #DDE5F4;
+}
+
+#ads-number
+{
+   width: 100%;
+   background-color: #DDE5F4;
+   border-bottom: 1px solid #668EAB;
+}
+
+#ads
+{
+    width: 100%;
+    background-color: #DDE5F4;
+}
+
+.ad
+{
+    background-color: #1B232B;
+    color: white;
+    border: 1px solid #668EAB;
+    display: grid;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    grid-template-columns: 28% 54% 18%;
+    grid-template-areas:
+        "photo info price";
+}
+
+.ad-photo
+{
+    background-color: #34414F;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    grid-area: photo;
+}
+
+.ad-photo img
+{
+    max-width: 288px;
+    max-height: 208px;
+    width: 98%;
+    height: 98%;
+    margin: auto;
+    aspect-ratio: 1.384615385;
+}
+
+.ad-info-area
+{
+    display: flex;
+    flex-direction: column;
+    padding-left: 8px;
+    background-color: #1B232B;
+    grid-area: info;
+}
+
+.ad-title
+{
+    font-size: 24px;
+    height:30%;
+    overflow:scroll;
+}
+
+.ad-version
+{
+    font-size: 20px;
+    flex-grow: 1;
+    max-height:35%;
+    overflow:scroll;
+}
+
+.ad-location
+{
+    font-size: 16px;
+    height:fit-content;
+    overflow:scroll;
+}
+
+.ad-info
+{
+    font-size: 26px;
+    height: fit-content;
+    flex-grow: 1;
+    overflow:scroll;
+}
+
+.ad-price-area
+{
+    background-color: #1B232B;
+    grid-area: price;
+    display: flex;
+    flex-direction: column;
+}
+
+.ad-price-space1
+{
+    flex-grow: 1;
+}
+
+.ad-price
+{
+
+    font-size: 20px;
+    background-color: #668EAB;
+    flex-grow: 1;
+    text-align: right;
+}
+
+.ad-price-space2
+{
+    flex-grow: 7;
+}
+
+.brutto
+{
+    font-size: 14px;
+}
+
+#pagination
+{
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 40px;
+    color: black;
+    display: flex;
+    justify-content: center;
+}
+
+#pagination a
+{
+    font-size: 40px;
+    color: black;
+    display: inline;
+}
+
+#pagination ul li
+{
+    display:inline;
+}
+
+.actualPage
+{
+    background-color: lightgreen;
+}
+
+#mini-pag-con
+{
+    display: flex;
+    justify-content: center;
+}
+
+.mini-pagination
+{
+    min-height: fit-content;
+    height: 60px;
+    display: none;
+    text-align:center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    background-color: #668EAB;
+    width: 90%;
+    max-width: 575px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.mini-pagination:hover
+{
+    background-color: #4D697D;
+    color: white;
+    text-decoration: none;
+}
+
+
+.mini-pagination a
+{
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+    line-height: 60px;
+    text-align: center;
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+#footer
+{
+    background-color: #B1C4D8;
+    display: flex;
+    flex-wrap: wrap;
+    height: fit-content;
+}
+
+.footer-part
+{
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.foter-part-containter
+{
+
+}
+
+.footer-part-title
+{
+    font-weight: bold;
+    font-size: 36px;
+}
+
+.footer-part-info
+{
+    line-height: 2;
+}
+
+#pagination a
+{
+    font-size: 30px;
+}
+
+.footer-phone
+{
+    font-size: 16px;
+}
+
+
+
+@media screen and (max-width: 700px) {
+
+    #navbar
+    {
+        display: none;
+    }
+
+    #phone-navbar
+    {
+        display: flex;
+        flex-direction: column;
+    }
+
+}
+
+
+@media screen and (max-width: 600px) {
+ 
+    .ad
+    {
+        background-color: #1B232B;
+        display: grid;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        grid-template-columns: 100%;
+        grid-template-rows: 104px fit-content fit-content;
+        grid-template-areas:
+        "photo"
+        "info"
+        "price";
+    }
+
+    .ad-photo img
+    {
+        max-width: 144px;
+        max-height: 104px;
+        width: 98%;
+        height: 98%;
+        margin: auto;
+        aspect-ratio: 1.384615385;
+    }
+
+    .ad-price
+    {
+       padding-left: 10px;
+    }
+
+    .ad-title
+    {
+        height:fit-content;
+    }
+
+    .ad-version
+    {
+        height: fit-content;
+    }
+
+    .ad-location
+    {
+        height: fit-content;
+    }
+
+    .ad-info
+    {
+        height: fit-content;
+    }
+
+    .ad-price-space1
+    {
+        display: none;
+    }
+
+    .ad-price
+    {
+        text-align: left;
+    }
+
+    .ad-price-space2
+    {
+        display: none;
+    }
+
+    #pagination
+    {
+        display: none;
+    }
+
+    .mini-pagination
+    {
+        display: block;
+    }
+
+    #footer
+    {      
+        display: none;
+    }
+
+
+}
+
+
+
+
