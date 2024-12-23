@@ -17,5 +17,14 @@ class View
         require_once("templates/Ads.php");
         require_once("templates/footer.php");
         echo '</body>';
-    } 
+    }
+
+    public static function adPageView(array $searchData,array $post)
+    {
+        echo '<body>';
+            require_once("templates/navbar.php");
+            require_once("templates/Ad.php");
+            require_once("templates/footer.php");
+        echo '</body>';
+    }
 }

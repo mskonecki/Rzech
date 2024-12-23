@@ -8,8 +8,6 @@ namespace App;
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-session_start();
-
 require_once("config/Exceptions/StorageException.php");
 require_once("config/Exceptions/ConfigException.php");
 require_once("Database.php");
@@ -38,16 +36,45 @@ class Controller
         $get = $this->escapeData($get);
         $post = $this->escapeData($post);
         $session = $this->escapeData($post);
-        var_dump($post);
         echo '<!DOCTYPE HTML>';
-        echo '</html lang="pl">';
+        echo '<html lang="pl">';
         require_once("templates/head.php");
         $action = $get['action'] ?? 'Ads';
 
         switch($action)
         {
             case 'Ads':
+                if(!empty($_SESSION['post_copy']) && empty($post))
+                {
+                    $post = $_SESSION['post_copy'];
+                    unset($_SESSION['post_copy']);
+                }
                     $this->renderAdPage($get,$post);
+                break;
+
+            case 'ad':
+                $fuelList = $this->db->getFuelList();
+                $bodyTypeList = $this->db->getBodyTypeList();
+                if(!isset($get['adID']))
+                {
+                    throw new ConfigException('Strona nie istnieje');
+                }
+                $adID = (int)$get['adID'];
+                $adData = $this->db->getAd($adID);
+                $familliarAds = $this->db->getFamilliarAds($adID);
+                $searchData = [
+                    'fuelList' => $fuelList,
+                    'bodyTypeList' => $bodyTypeList,
+                    'adData' => $adData,
+                    'familliarAds' => $familliarAds
+                ];
+                if(!empty($post))
+                {
+                    $_SESSION['post_copy'] = $post;
+                    header('Location: index.php?action=Ads&page=1');
+                    exit;
+                }
+                View::adPageView($searchData,$post);
                 break;
 
             default:

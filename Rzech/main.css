@@ -5,7 +5,6 @@
     src:url(fonts/JosefinSans-VariableFont_wght.ttf);
 }
 
-
 *
 {
     font-family: joseph;
@@ -313,7 +312,7 @@ body
 {
     font-size: 24px;
     height:30%;
-    overflow:scroll;
+    overflow:hidden;
 }
 
 .ad-version
@@ -321,14 +320,14 @@ body
     font-size: 20px;
     flex-grow: 1;
     max-height:35%;
-    overflow:scroll;
+    overflow:hidden;
 }
 
 .ad-location
 {
     font-size: 16px;
     height:fit-content;
-    overflow:scroll;
+    overflow:hidden;
 }
 
 .ad-info
@@ -336,7 +335,7 @@ body
     font-size: 26px;
     height: fit-content;
     flex-grow: 1;
-    overflow:scroll;
+    overflow:hidden;
 }
 
 .ad-price-area
@@ -375,7 +374,7 @@ body
 {
     margin-top: 40px;
     margin-bottom: 20px;
-    font-size: 40px;
+    font-size: 10px;
     color: black;
     display: flex;
     justify-content: center;
@@ -383,7 +382,7 @@ body
 
 #pagination a
 {
-    font-size: 40px;
+    font-size: 10px;
     color: black;
     display: inline;
 }
@@ -393,7 +392,7 @@ body
     display:inline;
 }
 
-.actualPage
+.actualPage ul
 {
     background-color: lightgreen;
 }
@@ -482,6 +481,359 @@ body
     font-size: 16px;
 }
 
+#adContainer
+{
+    padding-top: 40px;
+    height: fit-content;
+    width: 100%;
+    background-color: #DDE5F4;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 40px;
+}
+
+#adInfo
+{
+    display: grid;
+    grid-template-columns: 61% 36%;
+    grid-template-rows: fit-content;
+    column-gap: 3%;
+    grid-template-areas: "carArea ownerArea";
+    height: fit-content;
+    max-width: 1654px;
+    width: 92%;
+}
+
+#carArea
+{
+    height: fit-content;
+    grid-area: carArea;
+}
+
+#adArea1
+{
+    color: white;
+    width: 100%;
+    height:fit-content;
+    display: grid;
+    grid-template-columns: 59% 41%;
+    grid-template-rows: fit-content fit-content;
+    grid-template-areas: "adNumber dataTitle"
+                         "photoArea adDetails";
+    
+}
+
+#adNumber
+{
+    font-size: 36px;
+    background-color: #668EAB;
+    border-bottom: 1px solid #B1C4D8;
+    grid-area: adNumber;
+}
+
+#dataTitle
+{
+    border-left: 1px solid #B1C4D8;
+    border-bottom: 1px solid #B1C4D8;
+    text-indent: 2%;
+    font-size: 36px;
+    background-color: #668EAB;
+    grid-area: dataTitle;
+}
+
+#photoArea
+{
+    background-color: #34414F;
+    grid-area: photoArea;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#photoArea img
+{
+    width: 100%;
+    aspect-ratio: 600/474;
+    max-width: 600px;
+}
+
+#adDetails
+{
+    border-bottom: 1px #668EAB solid;
+    font-size: 24px;
+    background-color: #1B232B;
+    grid-area: adDetails;
+}
+
+
+#adDetails p
+{
+    margin-left: 2%;
+}
+
+#adArea2
+{
+    display: grid;
+    grid-template-columns: 59% 41%;
+    grid-template-rows: fit-content;
+    grid-template-areas: "priceArea alertArea";
+}
+
+
+#priceArea
+{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background-color: #1B232B;
+    width: 100%;
+    height: 100%;
+    grid-area: priceArea;
+}
+
+#price
+{
+    color: white;
+    padding-left: 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 87%;
+    font-size: 36px;
+    min-height: fit-content;
+    height: 60%;
+    background-color: #668EAB;
+}
+
+#alertArea1
+{
+    padding-top: 20px;
+    text-align: center;
+    background-color: #1B232B;
+    grid-area: alertArea;
+    min-height: fit-content;
+}
+
+#alertArea1 a
+{
+    color: white;
+}
+
+#alertArea2
+{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: fit-content;
+}
+
+#alertArea2 a
+{
+    color: white;
+    text-decoration: none;
+    width: 40%;
+    height: fit-content;
+    background-color: #34414F;
+    display: block;
+}
+
+#alertButton
+{
+    font-size: 16px;
+    overflow: hidden;
+    border: 1px solid white;
+    border-radius: 5px;
+    width: 100%;
+    height: fit-content;
+    padding-top:20px;
+    padding-bottom: 20px;
+    background-color: #442828;
+}
+
+#alertButton:hover
+{
+    background-color: #8d1e1e;
+}
+
+#descriptionArea
+{
+    width: 100%;
+    height: 450px;
+    background-color: #1B232B;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+#description
+{
+    padding: 10px;
+    font-size: 32px;
+    color: white;
+    border: 1px solid #B1C4D8;
+    background-color: #1B232B;
+    width: 94%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+#ownerArea
+{
+    display: flex;
+    flex-direction: column;
+    grid-area: ownerArea;
+}
+
+#ownerTitle
+{
+    font-size: 36px;
+    height: fit-content;
+    background-color:#668EAB;
+    color: white;
+}
+
+#ownerIcon
+{
+    width: 100%;
+    height: 30%;
+    background-color:#1B232B;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+#ownerInfo
+{
+    text-align: left;
+    min-height:51%;
+    height: fit-content;
+    color: white;
+    background-color: #1B232B;
+}
+
+#ownerSpace
+{
+    background-color:#DDE5F4;
+    flex-grow: 1;
+}
+
+#VINArea
+{
+    background-color:#1B232B;
+    width: 100%;
+    min-height: 11%;
+    height: fit-content;
+    display: flex;
+    justify-content: right;
+    align-content: center;
+    align-items: center;
+}
+
+#VIN
+{
+    font-size: 30px;
+    display: flex;
+    justify-content: right;
+    align-content: center;
+    align-items: center;
+    color: white;
+    width: 90%;
+    text-align: right;
+    background-color: #668EAB;
+    height: 70%;
+}
+
+#ownerInfo p
+{
+    margin-left: 4%;
+    font-size: 32px;
+}
+
+#ownerIcon img
+{
+    max-width: 250px;
+    width: 50%;
+    aspect-ratio: 250/218;
+}
+
+#familliarContainer
+{
+    background-color: #DDE5F4;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#adsFam
+{
+    font-size: 36px;
+}
+
+#familliarAds
+{
+    max-width: 1654px;
+    width: 92%;
+}
+
+
+
+
+@media screen and (max-width: 1050px) {
+
+    #adInfo
+    {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: fit-content fit-content;
+        row-gap: 1%;
+        grid-template-areas: "carArea"
+                            "ownerArea";
+    }
+
+    #adArea1
+    {
+        width: 100%;
+        height:fit-content;
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: fit-content fit-content fit-content;
+        grid-template-areas: "adNumber"
+                             "dataTitle"
+                             "adDetails";
+    }
+
+    #adArea2
+    {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: fit-content fit-content;
+        grid-template-areas: "priceArea"
+                              "alertArea";
+    }
+
+    #price
+    {
+        padding-left: 0;
+        width: 100%;
+        min-height: fit-content;
+        height: 100%;
+    }
+
+    #ownerIcon
+    {
+        display: none;
+    }
+
+    #VIN
+    {
+        width: 100%;
+        height: 100%;
+    }
+}
 
 
 @media screen and (max-width: 700px) {
@@ -501,7 +853,8 @@ body
 
 
 @media screen and (max-width: 600px) {
- 
+
+
     .ad
     {
         background-color: #1B232B;
@@ -585,5 +938,14 @@ body
 }
 
 
+@media screen and (max-width: 250px) {
+
+    #adArea
+    {
+        width: 100%;
+        aspect-ratio: 0.45;
+        background-color: blue;
+    }
 
 
+}
