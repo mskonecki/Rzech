@@ -21,6 +21,8 @@ use App\ConfigException;
 use App\Database;
 use App\Controller;
 
+session_start();
+
 try
 {
     $controller = new Controller($configuration['db']);

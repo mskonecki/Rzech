@@ -297,6 +297,65 @@ class Database
 
         return $wynik;
     }
+
+    public function getAd(int $adID)
+    {
+        $sql = $this->connection->prepare("SELECT adID,price,title,brand,model,version,engineDisplacement,enginePower,gearboxName,bodyTypeName,fuelName,drivertrainName,mileage,productionDate,VIN,videoYT,login,firstName,lastName,
+                                           accountType,location,phone,email,registrationDate,picture,description,VIN
+                                           FROM Ad LEFT JOIN Advertiser ON (adOwner = userID) LEFT JOIN BrandModel ON (brandmodelID = IDbrandmodel)
+                                           LEFT JOIN Fuel ON (fuel = fuelID) LEFT JOIN AdDetails ON (detailsID = adDetailsID)
+                                           LEFT JOIN Gearbox ON (gearbox = gearboxID) LEFT JOIN Drivetrain ON (drivetrain = drivetrainID)
+                                           LEFT JOIN BodyType ON(bodyType = bodyTypeID) LEFT JOIN Wheel ON (wheel = wheelID)
+                                           WHERE adID = $adID AND blockStatus=0");
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if(empty($wynik))
+        {
+            throw new StorageException('Ogłoszenie o podanym id nie istnieje lub zostało zablokowane');
+        }
+
+        return $wynik;      
+    }
+
+    public function getFamilliarAds(int $adID) : array
+    {
+
+
+       $sql = $this->connection->prepare("SELECT brand,model,productionDate,fuel
+                                         FROM Ad LEFT JOIN AdDetails ON (detailsID = adDetailsID) LEFT JOIN BrandModel ON (brandmodelID = IDBrandModel) 
+                                         LEFT JOIN BodyType ON(bodyType = bodyTypeID) 
+                                         LEFT JOIN Fuel ON (fuel = fuelID) LEFT JOIN Advertiser ON (adOwner = userID) 
+                                         WHERE adID = $adID");
+
+       $sql->execute();
+       $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+       $marka = $wynik['brand'];
+       $model = $wynik['model'];
+       $paliwo = $wynik['fuel'];
+       $dataProdukcji = $wynik['productionDate'];
+
+
+       $sql = $this->connection->prepare("SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price 
+                                          FROM Ad LEFT JOIN AdDetails ON (detailsID = adDetailsID) LEFT JOIN BrandModel ON (brandmodelID = IDBrandModel) 
+                                          LEFT JOIN BodyType ON(bodyType = bodyTypeID) LEFT JOIN Fuel ON (fuel = fuelID) 
+                                          LEFT JOIN Advertiser ON (adOwner = userID) 
+                                          WHERE (brand = '$marka' OR model = '$model' OR productionDate = '$dataProdukcji' or fuel = '$paliwo')
+                                          AND adID != $adID
+                                          UNION ALL 
+                                          SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price 
+                                          FROM Ad LEFT JOIN AdDetails ON (detailsID = adDetailsID) LEFT JOIN BrandModel ON (brandmodelID = IDBrandModel) 
+                                          LEFT JOIN BodyType ON(bodyType = bodyTypeID) LEFT JOIN Fuel ON (fuel = fuelID) 
+                                          LEFT JOIN Advertiser ON (adOwner = userID)
+                                          WHERE adID != $adID
+                                          LIMIT 3 OFFSET 0"); 
+
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
           
 }
 
