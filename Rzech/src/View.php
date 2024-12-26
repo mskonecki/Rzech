@@ -18,7 +18,7 @@ class View
         require_once("templates/footer.php");
         echo '</body>';
     }
-<<<<<<< HEAD
+
     
     public static function loginPageView(){
         echo '<body>';
@@ -31,7 +31,7 @@ class View
         echo '<body>';
         require_once("templates/banerRegister.php");
         require_once("templates/Register.php");
-=======
+    }
 
     public static function adPageView(array $searchData,array $post)
     {
@@ -39,7 +39,6 @@ class View
             require_once("templates/navbar.php");
             require_once("templates/Ad.php");
             require_once("templates/footer.php");
->>>>>>> c996ed4fab8b0b9d67c0599671dae2a6f6f080c5
         echo '</body>';
     }
 }

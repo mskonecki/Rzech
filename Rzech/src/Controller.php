@@ -52,14 +52,14 @@ class Controller
                     $this->renderAdPage($get,$post);
                 break;
 
-<<<<<<< HEAD
+
             case 'Login':
                     $this->renderLoginPage();
                 break;
 
             case 'Register':
                     $this->renderRegisterPage();
-=======
+
             case 'ad':
                 $fuelList = $this->db->getFuelList();
                 $bodyTypeList = $this->db->getBodyTypeList();
@@ -83,7 +83,6 @@ class Controller
                     exit;
                 }
                 View::adPageView($searchData,$post);
->>>>>>> c996ed4fab8b0b9d67c0599671dae2a6f6f080c5
                 break;
 
             default:
