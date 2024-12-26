@@ -1,0 +1,53 @@
+/*do logowania*/
+.baner {
+    background-color: #1B232B;
+    color: white;
+    padding: 20px;
+    a{
+        color: white;
+        text-decoration: none;
+    }
+    p{
+    text-align: center;
+    font-size: 90px;
+    }
+    i{
+        font-size: 60px;
+    }
+}
+
+.loginRegister {
+    background-color: #DDE5F4;
+    padding: 20px;
+    p{
+        text-align: center;
+    }
+
+}
+
+.fieldsLoginRegister {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    *{
+        margin: 10px;
+    }
+
+    input, select{
+        background-color: #B1C4D8;
+        width: 100%;
+        padding: 10px;
+        border-width: 2px;
+    }
+
+    #showPasswd{
+        margin: 20px;
+        width: 10px;
+        transform: scale(3);
+    }
+    .submitButton {
+        background-color: #1B232B;
+        color: white;
+        padding: 20px;
+    }
+}

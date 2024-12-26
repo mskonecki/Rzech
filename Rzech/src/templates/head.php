@@ -7,5 +7,6 @@
     <meta name="author" content="Złoty pociąg S.A" />
 
     <link rel="stylesheet" href="main.css" type="text/css" />
+    <link rel="stylesheet" href="gk.css" type="text/css" />
     <link rel="stylesheet" href="fontello/css/fontello.css" type="text/css"/>
 </head>

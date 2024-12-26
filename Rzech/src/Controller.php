@@ -50,6 +50,14 @@ class Controller
                     $this->renderAdPage($get,$post);
                 break;
 
+            case 'Login':
+                    $this->renderLoginPage();
+                break;
+
+            case 'Register':
+                    $this->renderRegisterPage();
+                break;
+
             default:
                 throw new ConfigException('Strona nie istnieje');
                 break;
@@ -100,6 +108,14 @@ class Controller
         ];
         
         View::adsPageView($searchData,$post);
+    }
+
+    private function renderLoginPage(){
+        View::loginPageView();
+    }
+
+    private function renderRegisterPage(){
+        View::registerPageView();
     }
 
     private function escapeData($data)

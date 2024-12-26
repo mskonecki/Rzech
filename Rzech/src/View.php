@@ -17,5 +17,19 @@ class View
         require_once("templates/Ads.php");
         require_once("templates/footer.php");
         echo '</body>';
-    } 
+    }
+    
+    public static function loginPageView(){
+        echo '<body>';
+        require_once("templates/banerLogin.php");
+        require_once("templates/Login.php");
+        echo '</body>';
+    }
+
+    public static function registerPageView(){
+        echo '<body>';
+        require_once("templates/banerRegister.php");
+        require_once("templates/Register.php");
+        echo '</body>';
+    }
 }
