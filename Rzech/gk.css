@@ -1,4 +1,4 @@
-/*do logowania*/
+/*do logowania i rejestracji*/
 .baner {
     background-color: #1B232B;
     color: white;
@@ -34,6 +34,7 @@
     }
 
     input, select{
+        box-sizing: border-box;
         background-color: #B1C4D8;
         width: 100%;
         padding: 10px;
@@ -41,6 +42,66 @@
     }
 
     #showPasswd{
+        margin: 20px;
+        width: 10px;
+        transform: scale(3);
+    }
+    .submitButton {
+        background-color: #1B232B;
+        color: white;
+        padding: 20px;
+    }
+}
+
+
+/* do dodaj og³oszenie*/
+
+.CreateModifyAdd {
+    background-color: #DDE5F4;
+    padding: 20px;
+    p{
+        text-align: center;
+    }
+}
+
+.fieldsCreateModifyAdd {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    *{
+        margin: 10px;
+    }
+
+    form{
+        background-color: #B1C4D8;
+        padding: 40px;
+    }
+
+    input, select, textarea{
+        box-sizing: border-box;
+        background-color: white;
+        width: 100%;
+        padding: 10px;
+        border-width: 2px;
+    }
+
+    .pForm{
+        font-size: 40px;
+        margin: 20px;
+        margin-top: 40px;
+    }
+
+
+
+    .inputGrow{
+        field-sizing: content;
+        max-inline-size: 25ch;
+        min-block-size: 1.5lh;
+    }
+
+
+
+    #pricecheckbox{
         margin: 20px;
         width: 10px;
         transform: scale(3);

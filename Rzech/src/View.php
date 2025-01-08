@@ -31,6 +31,7 @@ class View
         echo '<body>';
         require_once("templates/banerRegister.php");
         require_once("templates/Register.php");
+        echo '</body>';
     }
 
     public static function adPageView(array $searchData,array $post)
@@ -39,6 +40,13 @@ class View
             require_once("templates/navbar.php");
             require_once("templates/Ad.php");
             require_once("templates/footer.php");
+        echo '</body>';
+    }
+
+    public static function createAddView(){
+        echo '<body>';
+        require_once("templates/banerCreateAdd.php");
+        require_once("templates/CreateAdd.php");
         echo '</body>';
     }
 }

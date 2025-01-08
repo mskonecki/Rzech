@@ -55,10 +55,50 @@ class Controller
 
             case 'Login':
                     $this->renderLoginPage();
+                    if(!empty($post['loginField']) && !empty($post['passwdField']) )
+                    {
+                        try
+                        {
+                            $_SESSION['userData'] = $this->db->validateLoginData($post['loginField'],$post['passwdField']);
+                            header('Location: index.php');
+                            exit();
+                        }
+                        catch(StorageException $e)
+                        {
+                            echo $e->getMessage();
+                        }
+                    }
+
+                    if(isset($SESSION['userData']))
+                    {
+                        header('Location: index.php');
+                        exit(); 
+                    }
                 break;
 
             case 'Register':
                     $this->renderRegisterPage();
+                    if(!empty($post['loginField']))
+                    {
+                        $registerData = [
+                            'login' => $post['loginField'],
+                            'firstname' => $post['firstname'],
+                            'lastname' => $post['lastname'],
+                            'accType' => $post['accType'],
+                            'location' => $post['location'],
+                            'phone' => $post['phone'],
+                            'email' => $post['email'],
+                            'password' => $post['passwdField']
+                        ];
+
+                        $this->db->createUser($registerData);
+                        echo '</br>Udało się utworzyć użytkownika!';
+                    }
+                break;
+
+            case 'CreateAdd':
+                    $this->renderCreateAddPage();
+                break;
 
             case 'ad':
                 $fuelList = $this->db->getFuelList();
@@ -143,6 +183,10 @@ class Controller
 
     private function renderRegisterPage(){
         View::registerPageView();
+    }
+
+    private function renderCreateAddPage(){
+        View::createAddView();
     }
 
     private function escapeData($data)

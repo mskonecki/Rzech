@@ -356,6 +356,126 @@ class Database
 
         return $wynik;
     }
+
+    public function alert($msg) {
+        echo "<script type='text/javascript'>alert('$msg');</script>";
+    }
+
+    public function validateLoginData(string $login, string $password) : array
+    {
+        $sql = $this->connection->prepare('SELECT userID,login,email,phone 
+                                           FROM Advertiser WHERE passwordHash = SHA2(CONCAT(:password,userSalt),512)
+                                           AND login = :login');
+        
+        $sql->bindParam(':password',$password);
+        $sql->bindParam(':login',$login);
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+        if(empty($wynik))
+        {
+            $this->alert('Nieprawidłowe dane logowania');
+            throw new StorageException('Nieprawidłowe dane logowania');
+        }
+        return $wynik;
+    }
+
+    public function isEmailBusy(string $email) : bool
+    {
+        $sql = $this->connection->prepare('SELECT EXISTS(SELECT email FROM Advertiser WHERE email = :email) as isBusy');
+        $sql->bindParam(':email',$email);
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+        return (bool)$wynik['isBusy'];
+    }
+
+    public function validatePhone(string $phone) : bool
+    {
+        if(strlen($phone)==9 && is_numeric($phone))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public function createUser(array $userData): void
+    {
+        if(empty($userData['login']) || empty($userData['firstname']) || empty($userData['lastname']) || empty($userData['location']) || empty($userData['phone'])
+            || empty($userData['email']) || empty($userData['password']) )
+        {
+            throw new ConfigException('Brak wymaganych danych w formularzu');
+        }
+
+        if($this->IsUserExist($userData['login']) == 1)
+        {
+            throw new StorageException('Login jest już zajęty!');
+        }
+
+        if($this->validatePhone($userData['phone']) == 0)
+        {
+            throw new StorageException('Nieprawidłowy numer telefonu - wpisz 9 cyfr (np. 123456789)');
+        }
+
+        if(!filter_var($userData['email'], FILTER_VALIDATE_EMAIL))
+        {
+            throw new ConfigException('Nieprawidłowy adres email!');
+        }
+
+         if($this->isEmailBusy($userData['email']) == 1)
+        {
+            throw new StorageException('Istnieje użytkownik z takim emailem!');
+        }
+
+        if(strlen($userData['password']) < 8)
+        {
+            throw new ConfigException('Hasło jest za krótkie! Musi mieć przynajmniej 8 znaków!');
+        }
+
+        try
+        {
+            $login = $userData['login'];
+            $firstname = $userData['firstname'];
+            $lastname = $userData['lastname'];
+            if($userData['accType'] == 'firmowe'){
+                $accountType = 1;
+            }
+            else{
+                $accountType = 0;
+            }
+            $location = $userData['location'];
+            $phone = $userData['phone'];
+            $email = $userData['email'];
+            $registrationDate = date("Y-m-d");
+            $blockadeStatus = 0;
+            $password = $userData['password'];
+            $userSalt = $salt = bin2hex(random_bytes(5));
+
+            $passwordHash = hash('sha512', $password.$userSalt);
+
+            $sql = $this->connection->prepare('INSERT INTO Advertiser (login, firstName, lastName, accountType, location, phone, email, registrationDate, blockadeStatus, passwordHash, userSalt)
+                                                VALUES
+                                                (:login, :firstname, :lastname, :accountType, :location, :phone, :email, :registrationDate, :blockadeStatus, :passwordHash, :userSalt)');
+            
+            $sql->bindParam(':login',$login);
+            $sql->bindParam(':firstname',$firstname);
+            $sql->bindParam(':lastname',$lastname);
+            $sql->bindParam(':accountType',$accountType);
+            $sql->bindParam(':location',$location);
+            $sql->bindParam(':phone',$phone);
+            $sql->bindParam(':email',$email);
+            $sql->bindParam(':registrationDate',$registrationDate);
+            $sql->bindParam(':blockadeStatus',$blockadeStatus);
+            $sql->bindParam(':passwordHash',$passwordHash);
+            $sql->bindParam(':userSalt',$userSalt);
+
+            $sql->execute();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            echo '<br/>';
+            throw new StorageException('Creating user error');
+        }
+    }
           
 }
 
