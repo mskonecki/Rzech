@@ -3,10 +3,17 @@
                 <form method="post">
                     <div id="search-fields">
                         <div class="search-field">
-                            <input type="text" name="brand-field" placeholder="Marka">
+                            <select id="brand-field" name="brand-field" onchange="updateBrand()">
+                                <option value="" disabled selected>Marka</option>
+                                <?php foreach($searchData['brandList'] as $value): ?>
+                                    <?php echo "<option value=".$value['brand'].">".$value['brand']."</option>"; ?>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="search-field">
-                            <input type="text" name="model-field" placeholder="Model">
+                            <select id="model-field" name="model-field" disabled>
+                                <option value="" disabled selected>Model</option>
+                            </select>
                         </div>
                         <div class="search-field">
                             <input type="text" name="priceFloor-field" placeholder="Cena od">

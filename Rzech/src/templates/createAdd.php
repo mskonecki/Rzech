@@ -1,22 +1,36 @@
 <div id="CreateAdd" class="CreateModifyAdd">
 	<div id="CreateAddForm" class="fieldsCreateModifyAdd">
-		<form method="post">
+		<form method="post" enctype="multipart/form-data">
 			<label for="title">Tytuł</label><br>
-			<textarea name="title" class="inputGrow"></textarea>
+			<textarea name="title" class="inputGrow" maxlength="255" required></textarea><br>
 
 			<p class="pForm">Dane ogólne</p>
 
 			<label for="brand">Marka</label><br>
-			<input type="text" name="brand"><br>
+			<select id="brand" name="brand" onchange="updateSelectModel()" required>
+				<option disabled selected value="">Wybierz markę</option>
+				<?php
+					$i=0;
+						foreach($selectData['brandList'] as $value)
+                        {
+							echo "<option value=".$value['brand'].">".$value['brand']."</option>";
+                            $i++;
+                        }
+                ?>
+            </select>
 
 			<label for="model">Model</label><br>
-			<input type="text" name="model"><br>
+			<select id="model" name="model" disabled required>
+				
+            </select>
 
 			<label for="version">Wersja</label><br>
-			<input type="text" name="version"><br>
+			<textarea name="version" class="inputGrow" maxlength="255"></textarea><br>
+
 
 			<label for="productionDate">Rok produkcji</label><br>
-			<select name="year-field">
+			<select name="productionDate" required>
+				<option disabled selected value="">Wybierz rok produkcji</option>
 				<?php
 					$value = 2025;
                     for($i=$value;$i>=1900;$i--)
@@ -27,50 +41,101 @@
             </select>
 
 			<label for="mileage">Przebieg (km)</label><br>
-			<input type="text" name="mileage"><br>
+			<input type="number" name="mileage" max="9999999" min="0" required><br>
 
 			<label for="vin">VIN</label><br>
-			<input type="text" name="vin"><br>
+			<input type="text" name="vin" maxlength="17" minlength="17" required><br>
 
 			<label for="bodyType">Typ nadwozia</label><br>
-			<input type="text" name="bodyType"><br>
+			<select name="bodyType" required>
+				<option disabled selected value="">Wybierz typ nadwozia</option>
+				<?php
+					$i=0;
+						foreach($selectData['bodyTypeList'] as $value)
+                        {
+							echo "<option value=".$value['bodyTypeID'].">".$value['bodyTypeName']."</option>";
+                            $i++;
+                        }
+                ?>
+            </select>
 
 			<p class="pForm">Dane techniczne</p>
 
 			<label for="engineDisplacement">Pojemność silnika (cm3)</label><br>
-			<input type="text" name="engineDisplacement"><br>
+			<input type="number" name="engineDisplacement" min="0" max="30000" required><br>
 
 			<label for="enginePower">Moc silnika (km)</label><br>
-			<input type="text" name="enginePower"><br>
+			<input type="number" name="enginePower" min="0" max="20000" required><br>
 
 			<label for="fuel">Paliwo</label><br>
-			<input type="text" name="fuel"><br>
+			<select name="fuel" required>
+				<option disabled selected value="">Wybierz rodzaj paliwa</option>
+				<?php
+					$i=0;
+						foreach($selectData['fuelList'] as $value)
+                        {
+							echo "<option value=".$value['FuelID'].">".$value['FuelName']."</option>";
+                            $i++;
+                        }
+                ?>
+            </select>
 
 			<label for="gearbox">Skrzynia biegów</label><br>
-			<input type="text" name="gearbox"><br>
+			<select name="gearbox" required>
+				<option disabled selected value="">Wybierz rodzaj skrzyni biegów</option>
+				<?php
+					$i=0;
+						foreach($selectData['gearboxList'] as $value)
+                        {
+							echo "<option value=".$value['gearboxID'].">".$value['gearboxName']."</option>";
+                            $i++;
+                        }
+                ?>
+            </select>
 
 			<label for="drivetrain">Napęd</label><br>
-			<input type="text" name="drivetrain"><br>
+			<select name="drivetrain" required>
+				<option disabled selected value="">Wybierz układ napędowy</option>
+				<?php
+					$i=0;
+						foreach($selectData['drivetrainList'] as $value)
+                        {
+							echo "<option value=".$value['drivetrainID'].">".$value['drivertrainName']."</option>";
+                            $i++;
+                        }
+                ?>
+            </select>
 
 			<label for="wheel">Kierownica</label><br>
-			<input type="text" name="wheel"><br>
+			<select name="wheel" required>
+				<option disabled selected value="">Wybierz pozycję kierownicy</option>
+				<?php
+					$i=0;
+						foreach($selectData['wheelList'] as $value)
+                        {
+							echo "<option value=".$value['wheelID'].">".$value['wheelName']."</option>";
+                            $i++;
+                        }
+                ?>
+            </select>
 
 			<p class="pForm">Prezentacja</p>
 
-			<label for="picture">Zdjęcie</label><br>
-			<input type="text" name="picture"><br>
+			<label for="picture">Zdjęcie (.png, .jpg, .jpeg maks. 16mb)</label><br>
+			<input type="file" id="picture" name="picture" accept=".png, .jpg, .jpeg" onchange="validateFileType()" required><br>
 
 			<label for="description">Opis</label><br>
-			<textarea name="description" class="inputGrow"></textarea>
+			<textarea name="description" class="inputGrow" maxlength="4000" required></textarea><br>
 
 			<label for="videoYT">Link do nagrania na Youtube</label><br>
-			<input type="text" name="videoYT"><br>
+			<input type="text" id="YT" name="videoYT" maxlength="255" onchange="validateYtURL()"><br>
 
 			<p class="pForm">Cena</p>
 
 			<label for="price">Cena</label><br>
-			<input type="text" name="price"><br>
-			<input type="checkbox" name="priceNegotiable" id="pricecheckbox">Cena do negocjacji<br>
+			<input type="number" name="price" min="0" max="2147483647" required><br>
+
+			<input type="checkbox" name="priceNegotiable" id="pricecheckbox" value="1">Cena do negocjacji<br>
 
 
 
@@ -79,5 +144,88 @@
 		</form>
 	</div>
 </div>
+
+<script>
+	function updateSelectModel(){
+		var SelectBrand = document.getElementById("brand");
+		var SelectModel = document.getElementById("model");
+
+		SelectModel.innerHTML = "";
+		SelectModel.disabled = true;
+
+		var defaultOption = document.createElement("option");
+		defaultOption.value = ""; // Wartość na sztywno
+		defaultOption.text = "Wybierz model"; // Tekst domyślnej opcji
+		defaultOption.disabled = true; // Ustaw jako nieaktywną
+		defaultOption.selected = true; // Ustaw jako wybraną
+		SelectModel.add(defaultOption); // Dodaj do brandField
+
+		if(SelectBrand.value){
+			SelectModel.disabled = false;
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "get_options_search2.php?group_name=" + encodeURIComponent(SelectBrand.value), true); // Użyj modelField.value
+			xhr.onload = function() {
+				if (xhr.status === 200) {
+					try {
+						var options = JSON.parse(xhr.responseText);
+						options.forEach(function(option) {
+							var newOption = document.createElement("option");
+							newOption.value = option; // Upewnij się, że to jest poprawne
+							newOption.text = option; // Upewnij się, że to jest poprawne
+							SelectModel.add(newOption);
+						});
+					} catch (e) {
+						console.error("Błąd podczas parsowania JSON:", e);
+					}
+				} else {
+					console.error("Błąd w żądaniu:", xhr.statusText);
+				}
+			};
+			xhr.onerror = function() {
+				console.error("Błąd w żądaniu AJAX.");
+			};
+			xhr.send();
+		}
+
+	}
+</script>
+
+<script type="text/javascript">
+    function validateFileType(){
+		var file =document.getElementById("picture");
+        var fileName = document.getElementById("picture").value;
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        if (extFile=="jpg" || extFile=="jpeg" || extFile=="png"){
+            if(file.files[0].size > 16000000){
+				alert("Ten plik jest za duży. Maksymalny rozmiar pliku to 16mb");
+				file.value = "";
+			}
+        }
+		else{
+            alert("Wymagane rozszeszenie pliku: png, jpeg, jpg");
+			file.value = null;
+        }   
+    }
+</script>
+
+<script type="text/javascript">
+    function validateYtURL(){
+		var url = document.getElementById("YT").value;
+		var regExp = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+
+		if(url.match(regExp)){
+			//gut gut
+		}
+		else{
+			alert("Ten link nie pochodzi ze strony YouTube");
+			document.getElementById("YT").value = "";
+		}
+    }
+</script>
+
+
+
 
 

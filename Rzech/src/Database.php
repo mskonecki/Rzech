@@ -267,6 +267,21 @@ class Database
         return $wynik;
     }
 
+    public function getBrandListSearch() : array
+    {
+        $sql = $this->connection->prepare('SELECT DISTINCT brand
+                                           FROM BrandModel
+                                           WHERE EXISTS 
+                                           (SELECT brandModelID 
+                                           FROM Ad 
+                                           WHERE brandModelID = IDBrandModel)');
+        
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
     public function getModelList() : array
     {
         $sql = $this->connection->prepare('SELECT DISTINCT model
@@ -278,9 +293,24 @@ class Database
         return $wynik;
     }
 
+     public function getModelListSearch(string $brand) : array
+    {
+        $sql = $this->connection->prepare('SELECT model
+                                           FROM BrandModel
+                                           WHERE EXISTS (SELECT brandModelID 
+                                                         FROM Ad 
+                                                         WHERE brandModelID = IDBrandModel)
+                                                         AND brand = :brand');
+                                
+        $sql->bindParam(':brand',$brand);
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+        return $wynik;
+    }
+
     public function getFuelList() : array
     {
-        $sql = $this->connection->prepare('SELECT FuelName
+        $sql = $this->connection->prepare('SELECT FuelID, FuelName
                                            FROM Fuel');
         $sql->execute();
         $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
@@ -290,8 +320,38 @@ class Database
 
     public function getBodyTypeList() : array
     {
-        $sql = $this->connection->prepare('SELECT bodyTypeName
+        $sql = $this->connection->prepare('SELECT bodyTypeID, bodyTypeName
                                            FROM BodyType');
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function getGearboxList() : array
+    {
+        $sql = $this->connection->prepare('SELECT gearboxID, gearboxName
+                                           FROM gearbox');
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function getDrivetrainList() : array
+    {
+        $sql = $this->connection->prepare('SELECT drivetrainID, drivertrainName
+                                           FROM drivetrain');
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function getWheelList() : array
+    {
+        $sql = $this->connection->prepare('SELECT wheelID, wheelName
+                                           FROM wheel');
         $sql->execute();
         $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
 
@@ -395,6 +455,102 @@ class Database
             return true;
         }
         return false;
+    }
+
+    public function getBrandModelID(string $brand, string $model)
+    {
+        $sql = $this->connection->prepare('SELECT IDBrandModel FROM brandmodel WHERE brand = :brand AND model = :model');
+
+        $sql->bindParam(':brand',$brand);
+        $sql->bindParam(':model',$model);
+
+        $sql->execute();
+
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+        return $wynik;
+    }
+
+    public function CreateAd(array $adData): void
+    {
+        try
+        {
+            //addetails
+            $VIN = $adData['vin'];
+            $gearbox = $adData['gearbox'];
+            $drivetrain = $adData['drivetrain'];
+            $bodyType = $adData['bodyType'];
+            $wheel = $adData['wheel'];
+            $description = $adData['description'];
+            $videoYT = $adData['videoYT'];
+
+            $sql = $this->connection->prepare('INSERT INTO addetails (VIN, gearbox, drivetrain, bodyType, wheel, description, videoYT)
+                                                VALUES
+                                                (:VIN, :gearbox, :drivetrain, :bodyType, :wheel, :description, :videoYT)');
+            
+            $sql->bindParam(':VIN',$VIN);
+            $sql->bindParam(':gearbox',$gearbox);
+            $sql->bindParam(':drivetrain',$drivetrain);
+            $sql->bindParam(':bodyType',$bodyType);
+            $sql->bindParam(':wheel',$wheel);
+            $sql->bindParam(':description',$description);
+            $sql->bindParam(':videoYT',$videoYT);
+
+            $sql->execute();
+
+            $addetails =  $this->connection->lastInsertId();
+
+
+            //ad
+            $title = $adData['title'];
+            $adOwner = $adData['adOwner'];
+
+
+            $brandmodel = $this->getBrandModelID($adData['brand'], $adData['model']);
+            $brandmodelID = $brandmodel['IDBrandModel'];
+
+            $version = $adData['version'];
+            $productionDate = $adData['productionDate'];
+            $mileage = $adData['mileage'];
+            $engineDisplacement = $adData['engineDisplacement'];
+            $fuel = $adData['fuel'];
+            $enginePower = $adData['enginePower'];
+            $picture = $adData['picture'];
+            $price = $adData['price'];
+            $priceNegotiable = $adData['priceNegotiable'];
+            $adStatus = 1;
+            $blockStatus = 0;
+
+            $sql = $this->connection->prepare('INSERT INTO ad (title, adOwner, brandmodelID, version, productionDate, mileage, engineDisplacement, fuel, enginePower, 
+                                                    picture, price, priceNegotiable, adStatus, blockStatus, detailsID)
+                                                VALUES
+                                                (:title, :adOwner, :brandmodelID, :version, :productionDate, :mileage, :engineDisplacement, :fuel, :enginePower, 
+                                                    :picture, :price, :priceNegotiable, :adStatus, :blockStatus, :detailsID)');
+            
+            $sql->bindParam(':title',$title);
+            $sql->bindParam(':adOwner',$adOwner);
+            $sql->bindParam(':brandmodelID',$brandmodelID);
+            $sql->bindParam(':version',$version);
+            $sql->bindParam(':productionDate',$productionDate);
+            $sql->bindParam(':mileage',$mileage);
+            $sql->bindParam(':engineDisplacement',$engineDisplacement);
+            $sql->bindParam(':fuel',$fuel);
+            $sql->bindParam(':enginePower',$enginePower);
+            $sql->bindParam(':picture',$picture);
+            $sql->bindParam(':price',$price);
+            $sql->bindParam(':priceNegotiable',$priceNegotiable);
+            $sql->bindParam(':adStatus',$adStatus);
+            $sql->bindParam(':blockStatus',$blockStatus);
+            $sql->bindParam(':detailsID',$addetails);
+
+            $sql->execute();
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            echo '<br/>';
+            throw new StorageException('Creating user error');
+        }
     }
 
     public function createUser(array $userData): void

@@ -43,7 +43,7 @@ class View
         echo '</body>';
     }
 
-    public static function createAddView(){
+    public static function createAddView(array $selectData){
         echo '<body>';
         require_once("templates/banerCreateAdd.php");
         require_once("templates/CreateAdd.php");

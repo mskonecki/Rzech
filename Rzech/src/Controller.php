@@ -98,6 +98,49 @@ class Controller
 
             case 'CreateAdd':
                     $this->renderCreateAddPage();
+
+                    if(!empty($post['title']) && !empty($post['brand']) && !empty($post['model']) && !empty($post['productionDate']) && !empty($post['mileage']) 
+                        && !empty($post['vin']) && !empty($post['bodyType']) && !empty($post['engineDisplacement']) && !empty($post['enginePower']) 
+                        && !empty($post['fuel']) && !empty($post['gearbox']) && !empty($post['drivetrain']) && !empty($post['wheel']) && (isset($files['picture']['tmp_name']) && $files['picture']['error'] == 0)
+                        && !empty($post['description']) && !empty($post['price']) )
+                        {
+                        
+                        if(isset($post['priceNegotiable']))
+                        {
+                            $post['priceNegotiable'] = 1;
+                        }
+                        else{
+                            $post['priceNegotiable'] = 0;
+                        }
+
+                        $picture = file_get_contents($files['picture']['tmp_name']);
+
+                        $adData = [
+                            'adOwner' => $_SESSION['userData']['userID'],
+                            'title' => $post['title'],
+                            'brand' => $post['brand'],
+                            'model' => $post['model'],
+                            'version' => $post['version'],
+                            'productionDate' => $post['productionDate'],
+                            'mileage' => $post['mileage'],
+                            'vin' => $post['vin'],
+                            'bodyType' => $post['bodyType'],
+                            'engineDisplacement' => $post['engineDisplacement'],
+                            'enginePower' => $post['enginePower'],
+                            'fuel' => $post['fuel'],
+                            'gearbox' => $post['gearbox'],
+                            'drivetrain' => $post['drivetrain'],
+                            'wheel' => $post['wheel'],
+                            'picture' => $picture,
+                            'description' => $post['description'],
+                            'videoYT' => $post['videoYT'],
+                            'price' => $post['price'],
+                            'priceNegotiable' => $post['priceNegotiable']
+                        ];
+
+                        $this->db->createAd($adData);
+                        echo '</br>Udało się utworzyć ogłoszenie!';
+                    }                    
                 break;
 
             case 'ad':
@@ -110,8 +153,16 @@ class Controller
                 $adID = (int)$get['adID'];
                 $adData = $this->db->getAd($adID);
                 $familliarAds = $this->db->getFamilliarAds($adID);
+                $brandList = $this->db->getBrandListSearch();
+                foreach($brandList as $value)
+                {
+                    $brand = htmlentities($value['brand']);
+                    $modelList[$brand] = $this->db->getModelListSearch($brand);
+                }
                 $searchData = [
                     'fuelList' => $fuelList,
+                    'brandList' => $brandList,
+                    'modelList' => $modelList,
                     'bodyTypeList' => $bodyTypeList,
                     'adData' => $adData,
                     'familliarAds' => $familliarAds
@@ -160,12 +211,14 @@ class Controller
         $pagination = $this->db->getAdPagination($filters,ADS_ON_PAGE,$pageNumber);
         $adNumber = $this->db->countAd($filters);
         $brandList = $this->db->getBrandList();
+        $brandListSearch = $this->db->getBrandListSearch();
         $modelList = $this->db->getModelList();
 
         $searchData = [
             'fuelList' => $fuelList,
             'bodyTypeList' => $bodyTypeList,
             'brandList' => $brandList,
+            'brandListSearch' => $brandListSearch,
             'modelList' => $modelList,
             'adNumber' => $adNumber,
             'ads' => $ads,
@@ -186,7 +239,25 @@ class Controller
     }
 
     private function renderCreateAddPage(){
-        View::createAddView();
+        $brandList = $this->db->getBrandList();
+        $modelList = $this->db->getModelList();
+        $fuelList = $this->db->getFuelList();
+        $bodyTypeList = $this->db->getBodyTypeList();
+        $gearboxList = $this->db->getGearboxList();
+        $drivetrainList = $this->db->getDrivetrainList();
+        $wheelList = $this->db->getWheelList();
+
+        $selectData = [
+            'brandList' => $brandList,
+            'modelList' => $modelList,
+            'fuelList' => $fuelList,
+            'bodyTypeList' => $bodyTypeList,
+            'gearboxList' => $gearboxList,
+            'drivetrainList' => $drivetrainList,
+            'wheelList' => $wheelList
+        ];
+
+        View::createAddView($selectData);
     }
 
     private function escapeData($data)

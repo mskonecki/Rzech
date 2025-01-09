@@ -2,10 +2,10 @@
 	<div id="login" class="fieldsLoginRegister">
 		<form method="post">
 			<label for="loginField">Login</label><br>
-			<input type="text" name="loginField"><br>
+			<input type="text" name="loginField" required><br>
 
 			<label for="passwdField">Hasło</label><br>
-			<input type="password" name="passwdField" id="passwdField"><br>
+			<input type="password" name="passwdField" id="passwdField" required><br>
 			<input type="checkbox" onclick="showPassword()" id="showPasswd">Pokaż hasło<br>
 
 			<input class="submitButton" type="submit" value="Zaloguj się">

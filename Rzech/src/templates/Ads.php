@@ -3,10 +3,17 @@
                 <form method="post">
                     <div id="search-fields">
                         <div class="search-field">
-                            <input type="text" name="brand-field" placeholder="Marka">
+                            <select id="brand-field" name="brand-field" onchange="updateBrand()">
+                                <option value="" disabled selected>Marka</option>
+                                <?php foreach($searchData['brandListSearch'] as $value): ?>
+                                    <?php echo "<option value=".$value['brand'].">".$value['brand']."</option>"; ?>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="search-field">
-                            <input type="text" name="model-field" placeholder="Model">
+                            <select id="model-field" name="model-field" disabled>
+                                <option value="" disabled selected>Model</option>
+                            </select>
                         </div>
                         <div class="search-field">
                             <input type="text" name="priceFloor-field" placeholder="Cena od">
@@ -146,6 +153,50 @@
         </div>
     </div>
 
+    <script>
+    function updateBrand() {
+    var modelField = document.getElementById('model-field'); // Poprawna metoda
+    var brandField = document.getElementById('brand-field'); // Poprawna metoda
+
+    modelField.innerHTML = ""; // Wyczyść poprzednie opcje
+    modelField.disabled = true; // Wyłącz pole wyboru marki
+
+    var defaultOption = document.createElement("option");
+    defaultOption.value = ""; // Wartość na sztywno
+    defaultOption.text = "Model"; // Tekst domyślnej opcji
+    defaultOption.disabled = true; // Ustaw jako nieaktywną
+    defaultOption.selected = true; // Ustaw jako wybraną
+    modelField.add(defaultOption); // Dodaj do brandField
+
+    if (brandField.value) {
+        modelField.disabled = false; // Włącz pole wyboru marki
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "get_options_search.php?group_name=" + encodeURIComponent(brandField.value), true); // Użyj modelField.value
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var options = JSON.parse(xhr.responseText);
+                    options.forEach(function(option) {
+                        var newOption = document.createElement("option");
+                        newOption.value = option; // Upewnij się, że to jest poprawne
+                        newOption.text = option; // Upewnij się, że to jest poprawne
+                        modelField.add(newOption);
+                    });
+                } catch (e) {
+                    console.error("Błąd podczas parsowania JSON:", e);
+                }
+            } else {
+                console.error("Błąd w żądaniu:", xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            console.error("Błąd w żądaniu AJAX.");
+        };
+        xhr.send();
+    }
+}
+</script>
 
     <script>
         document.getElementById("hamburger").addEventListener("click", function() {
