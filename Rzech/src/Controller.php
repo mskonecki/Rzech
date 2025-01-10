@@ -191,9 +191,17 @@ class Controller
                             'price' => $post['price'],
                             'priceNegotiable' => $post['priceNegotiable']
                         ];
+                        
 
-                        $this->db->createAd($adData);
-                        echo '</br>Udało się utworzyć ogłoszenie!';
+                        try
+                        {
+                            $this->db->createAd($adData);
+                            echo '</br>Udało się utworzyć ogłoszenie!';
+                        }
+                        catch(StorageException $e)
+                        {
+
+                        }
                     }                    
                 break;
 

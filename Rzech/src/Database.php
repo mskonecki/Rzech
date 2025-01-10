@@ -557,7 +557,7 @@ class Database
         {
             echo $e->getMessage();
             echo '<br/>';
-            throw new StorageException('Creating user error');
+            throw new StorageException('Creating ad error');
         }
     }
 
