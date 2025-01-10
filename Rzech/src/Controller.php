@@ -65,7 +65,10 @@ class Controller
                         }
                         catch(StorageException $e)
                         {
-                            echo $e->getMessage();
+                            if($e->getMessage() == 'Nieprawidłowe dane logowania')
+                            {
+                                $_SESSION['loginError']['wrongLoginData'] = $e->getMessage();
+                            }
                         }
                     }
 
@@ -93,6 +96,7 @@ class Controller
                         try
                         {
                             $this->db->createUser($registerData);
+                            $_SESSION['createUserSuccess'] = 'Rejestracja przebiegła pomyślnie! Możesz się zalogować!';
                         }
                         catch(StorageException $e)
                         {
@@ -104,6 +108,11 @@ class Controller
                             if($e->getMessage() == 'Nieprawidłowy numer telefonu - wpisz 9 cyfr (np. 123456789)')
                             {
                                 $_SESSION['createUserError']['incorrectPhone'] = $e->getMessage();
+                            }
+
+                            if($e->getMessage() == 'Istnieje użytkownik z takim numerem telefonu!')
+                            {
+                                $_SESSION['createUserError']['busyPhone'] = $e->getMessage();
                             }
 
                             if($e->getMessage() == 'Istnieje użytkownik z takim emailem!')
@@ -129,8 +138,7 @@ class Controller
                             }
                         }
 
-                        if(!isset($_SESSION['createUserError']))
-                            $_SESSION['createUserSuccess'] = 'Rejestracja przebiegła pomyślnie! Możesz się zalogować!';
+                        
                     }
                     $this->renderRegisterPage();
                 break;

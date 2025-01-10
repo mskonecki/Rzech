@@ -433,7 +433,6 @@ class Database
         $wynik = $sql->fetch(PDO::FETCH_ASSOC);
         if(empty($wynik))
         {
-            $this->alert('Nieprawidłowe dane logowania');
             throw new StorageException('Nieprawidłowe dane logowania');
         }
         return $wynik;
@@ -455,6 +454,15 @@ class Database
             return true;
         }
         return false;
+    }
+
+    public function isPhoneBusy(string $phone) : bool
+    {
+        $sql = $this->connection->prepare('SELECT EXISTS(SELECT phone FROM Advertiser WHERE phone = :phone) as isBusy');
+        $sql->bindParam(':phone',$phone);
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+        return (bool)$wynik['isBusy'];
     }
 
     public function getBrandModelID(string $brand, string $model)
@@ -571,12 +579,17 @@ class Database
             throw new StorageException('Nieprawidłowy numer telefonu - wpisz 9 cyfr (np. 123456789)');
         }
 
+        if($this->isPhoneBusy($userData['phone']) == 1)
+        {
+            throw new StorageException('Istnieje użytkownik z takim numerem telefonu!');
+        }
+
         if(!filter_var($userData['email'], FILTER_VALIDATE_EMAIL))
         {
             throw new ConfigException('Nieprawidłowy adres email!');
         }
 
-         if($this->isEmailBusy($userData['email']) == 1)
+        if($this->isEmailBusy($userData['email']) == 1)
         {
             throw new StorageException('Istnieje użytkownik z takim emailem!');
         }

@@ -1,6 +1,10 @@
 <div id="Login" class="loginRegister">
 	<div id="login" class="fieldsLoginRegister">
 		<form method="post">
+			<?php if(isset($_SESSION['loginError']['wrongLoginData'])): ?>
+				<div style="color:red">Nieprawidłowe dane logowania</div>
+				<?php unset($_SESSION['loginError']['wrongLoginData']); ?>
+			<?php endif;?>
 			<label for="loginField">Login</label><br>
 			<input type="text" name="loginField" required><br>
 

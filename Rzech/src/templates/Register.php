@@ -3,7 +3,7 @@
 		<form method="post" id="registerForm">
 
 			<?php if(isset($_SESSION['createUserSuccess'])): ?>
-				<div style="color:blue"><?php echo $_SESSION['createUserSuccess']; ?></div>
+				<div style="color:blue"><?php echo "Rejestracja przebiegła pomyślnie!<br>Możesz się zalogować!" ?></div>
 				<?php unset($_SESSION['createUserSuccess']); ?>
 			<?php endif;?>
 
@@ -37,6 +37,11 @@
 			<?php if(isset($_SESSION['createUserError']['incorrectPhone'])): ?>
 				<div style="color:red">Podaj prawidłowy numer telefonu!</div>
 				<?php unset($_SESSION['createUserError']['incorrectPhone']); ?>
+			<?php endif;?>
+
+			<?php if(isset($_SESSION['createUserError']['busyPhone'])): ?>
+				<div style="color:red">Ten numer telefonu jest już zajęty!</div>
+				<?php unset($_SESSION['createUserError']['busyPhone']); ?>
 			<?php endif;?>
 
 			<label for="email">email</label><br>
