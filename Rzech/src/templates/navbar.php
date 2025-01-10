@@ -8,15 +8,25 @@
 
 
         <div id="navbar-options">
-            <a href="#">
+            <?php if(!empty($_SESSION['userData'] ?? [])): ?>
+                <a href="?action=myProfile">
+            <?php endif; ?>
+            <?php if(empty($_SESSION['userData'] ?? [])): ?>
+                <a href="?action=Login">
+            <?php endif; ?>
                 <div id="account-link">
                     Moje konto<i class="icon-user-circle"></i>
                 </div>
             </a>
 
-            <a href="#">
+            <?php if(!empty($_SESSION['userData'] ?? [])): ?>
+                <a href="?action=CreateAdd">
+            <?php endif; ?>
+            <?php if(empty($_SESSION['userData'] ?? [])): ?>
+                <a href="?action=Login">
+            <?php endif; ?>
                 <div class="action-button">
-                    <a href="#">Dodaj ogłoszenie</a>
+                    Dodaj ogłoszenie
                 </div>
             </a>
         </div>

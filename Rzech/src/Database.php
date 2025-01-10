@@ -331,7 +331,7 @@ class Database
     public function getGearboxList() : array
     {
         $sql = $this->connection->prepare('SELECT gearboxID, gearboxName
-                                           FROM gearbox');
+                                           FROM Gearbox');
         $sql->execute();
         $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
 
@@ -341,7 +341,7 @@ class Database
     public function getDrivetrainList() : array
     {
         $sql = $this->connection->prepare('SELECT drivetrainID, drivertrainName
-                                           FROM drivetrain');
+                                           FROM Drivetrain');
         $sql->execute();
         $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
 
@@ -351,7 +351,7 @@ class Database
     public function getWheelList() : array
     {
         $sql = $this->connection->prepare('SELECT wheelID, wheelName
-                                           FROM wheel');
+                                           FROM Wheel');
         $sql->execute();
         $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
 
@@ -423,7 +423,7 @@ class Database
 
     public function validateLoginData(string $login, string $password) : array
     {
-        $sql = $this->connection->prepare('SELECT userID,login,email,phone 
+        $sql = $this->connection->prepare('SELECT userID,login,email,phone,firstName,lastName,location,phone,email,accountType
                                            FROM Advertiser WHERE passwordHash = SHA2(CONCAT(:password,userSalt),512)
                                            AND login = :login');
         

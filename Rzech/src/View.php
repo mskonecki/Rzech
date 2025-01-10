@@ -16,7 +16,15 @@ class View
         require_once("templates/navbar.php");
         require_once("templates/Ads.php");
         require_once("templates/footer.php");
-        echo '</body>';
+        echo '<body>';
+    }
+
+    public static function myProfileView()
+    {
+        echo '<body>';
+        require_once("templates/navbar.php");
+        require_once("templates/myProfile.php");
+        echo '<body>';
     }
 
     
@@ -46,7 +54,7 @@ class View
     public static function createAddView(array $selectData){
         echo '<body>';
         require_once("templates/banerCreateAdd.php");
-        require_once("templates/CreateAdd.php");
+        require_once("templates/createAdd.php");
         echo '</body>';
     }
 }

@@ -77,7 +77,6 @@ class Controller
                 break;
 
             case 'Register':
-                    $this->renderRegisterPage();
                     if(!empty($post['loginField']))
                     {
                         $registerData = [
@@ -91,12 +90,59 @@ class Controller
                             'password' => $post['passwdField']
                         ];
 
-                        $this->db->createUser($registerData);
-                        echo '</br>Udało się utworzyć użytkownika!';
+                        try
+                        {
+                            $this->db->createUser($registerData);
+                        }
+                        catch(StorageException $e)
+                        {
+                            if($e->getMessage() == 'Login jest już zajęty!')
+                            {
+                                $_SESSION['createUserError']['busyLogin'] = $e->getMessage();
+                            }
+
+                            if($e->getMessage() == 'Nieprawidłowy numer telefonu - wpisz 9 cyfr (np. 123456789)')
+                            {
+                                $_SESSION['createUserError']['incorrectPhone'] = $e->getMessage();
+                            }
+
+                            if($e->getMessage() == 'Istnieje użytkownik z takim emailem!')
+                            {
+                                $_SESSION['createUserError']['busyEmail'] = $e->getMessage();
+                            }
+                        }
+                        catch(ConfigException $e)
+                        {
+                            if($e->getMessage() == 'Brak wymaganych danych w formularzu')
+                            {
+                                $_SESSION['createUserError']['missingData'] = $e->getMessage();
+                            }
+
+                            if($e->getMessage() == 'Nieprawidłowy adres email!')
+                            {
+                                $_SESSION['createUserError']['incorrectEmail'] = $e->getMessage();
+                            }
+
+                            if($e->getMessage() == 'Hasło jest za krótkie! Musi mieć przynajmniej 8 znaków!')
+                            {
+                                $_SESSION['createUserError']['shortPassword'] = $e->getMessage();
+                            }
+                        }
+
+                        if(!isset($_SESSION['createUserError']))
+                            $_SESSION['createUserSuccess'] = 'Rejestracja przebiegła pomyślnie! Możesz się zalogować!';
                     }
+                    $this->renderRegisterPage();
                 break;
 
             case 'CreateAdd':
+
+                    if(empty($_SESSION['userData'] ?? []))
+                    {
+                        header('Location: index.php?action=Login');
+                        exit;
+                    }
+
                     $this->renderCreateAddPage();
 
                     if(!empty($post['title']) && !empty($post['brand']) && !empty($post['model']) && !empty($post['productionDate']) && !empty($post['mileage']) 
@@ -174,6 +220,21 @@ class Controller
                     exit;
                 }
                 View::adPageView($searchData,$post);
+                break;
+
+            case 'myProfile':
+                if(empty($_SESSION['userData'] ?? []))
+                {
+                    header('Location: index.php?action=Login');
+                    exit;
+                }
+                View::myProfileView();
+                break;
+
+            case 'logout':
+                    session_destroy();
+                    header('Location: index.php?action=Ads');
+                    exit;
                 break;
 
             default:
