@@ -1,8 +1,13 @@
 <div id="CreateAdd" class="CreateModifyAdd">
 	<div id="CreateAddForm" class="fieldsCreateModifyAdd">
-		<form method="post" enctype="multipart/form-data">
+		<form method="post" enctype="multipart/form-data" id="createAdForm">
+			<?php if(isset($_SESSION['createAdSuccess'])): ?>
+				<div style="color:blue"><?php echo "Udało się utworzyć ogłoszenie!" ?></div>
+				<?php unset($_SESSION['createAdSuccess']); ?>
+			<?php endif;?>
+
 			<label for="title">Tytuł</label><br>
-			<textarea name="title" class="inputGrow" maxlength="255" required></textarea><br>
+			<textarea id="title" name="title" class="inputGrow" maxlength="255" required></textarea><br>
 
 			<p class="pForm">Dane ogólne</p>
 
@@ -25,7 +30,7 @@
             </select>
 
 			<label for="version">Wersja</label><br>
-			<textarea name="version" class="inputGrow" maxlength="255"></textarea><br>
+			<textarea id="version" name="version" class="inputGrow" maxlength="255"></textarea><br>
 
 
 			<label for="productionDate">Rok produkcji</label><br>
@@ -41,10 +46,15 @@
             </select>
 
 			<label for="mileage">Przebieg (km)</label><br>
-			<input type="number" name="mileage" max="9999999" min="0" required><br>
+			<input type="number" id="mileage" name="mileage" max="9999999" min="0" required><br>
 
 			<label for="vin">VIN</label><br>
-			<input type="text" name="vin" maxlength="17" minlength="17" required><br>
+			<input type="text" id="vin" name="vin" maxlength="17" minlength="17" required><br>
+			<?php if(isset($_SESSION['createAdError']['vinUsed'])): ?>
+				<div style="color:red">Samochód z tym numerem VIN <br>jest już w aktywnym ogłoszeniu. <br> Jeżeli to napewno twój VIN <br>skontaktuj się z administracją</div>
+				<?php unset($_SESSION['createAdError']['vinUsed']); ?>
+			<?php endif;?>
+
 
 			<label for="bodyType">Typ nadwozia</label><br>
 			<select name="bodyType" required>
@@ -62,10 +72,10 @@
 			<p class="pForm">Dane techniczne</p>
 
 			<label for="engineDisplacement">Pojemność silnika (cm3)</label><br>
-			<input type="number" name="engineDisplacement" min="0" max="30000" required><br>
+			<input type="number" id="engineDisplacement" name="engineDisplacement" min="0" max="30000" required><br>
 
 			<label for="enginePower">Moc silnika (km)</label><br>
-			<input type="number" name="enginePower" min="0" max="20000" required><br>
+			<input type="number" id="enginePower" name="enginePower" min="0" max="20000" required><br>
 
 			<label for="fuel">Paliwo</label><br>
 			<select name="fuel" required>
@@ -123,17 +133,26 @@
 
 			<label for="picture">Zdjęcie (.png, .jpg, .jpeg maks. 16mb)</label><br>
 			<input type="file" id="picture" name="picture" accept=".png, .jpg, .jpeg" onchange="validateFileType()" required><br>
+			<?php if(isset($_SESSION['createAdError']['wrongFileType'])): ?>
+				<div style="color:red">Ten plik nie jest obrazem</div>
+				<?php unset($_SESSION['createAdError']['wrongFileType']); ?>
+			<?php endif;?>
 
 			<label for="description">Opis</label><br>
-			<textarea name="description" class="inputGrow" maxlength="4000" required></textarea><br>
+			<textarea id="descriptionF" name="description" class="inputGrow" maxlength="4000" required></textarea><br>
 
 			<label for="videoYT">Link do nagrania na Youtube</label><br>
 			<input type="text" id="YT" name="videoYT" maxlength="255" onchange="validateYtURL()"><br>
+			<?php if(isset($_SESSION['createAdError']['wrongURL'])): ?>
+				<div style="color:red">Link nie pochodzi ze strony Youtube!</div>
+				<?php unset($_SESSION['createAdError']['wrongURL']); ?>
+			<?php endif;?>
+
 
 			<p class="pForm">Cena</p>
 
 			<label for="price">Cena</label><br>
-			<input type="number" name="price" min="0" max="2147483647" required><br>
+			<input type="number" id="priceF" name="price" min="0" max="2147483647" required><br>
 
 			<input type="checkbox" name="priceNegotiable" id="pricecheckbox" value="1">Cena do negocjacji<br>
 
@@ -225,6 +244,49 @@
     }
 </script>
 
+
+
+<script>
+	document.getElementById('createAdForm').addEventListener('input', function() {
+    var formDataAd = {
+        title: document.getElementById('title').value,
+        version: document.getElementById('version').value,
+        mileage: document.getElementById('mileage').value,
+		vin: document.getElementById('vin').value,
+		engineDisplacement: document.getElementById('engineDisplacement').value,
+		enginePower: document.getElementById('enginePower').value,
+		description: document.getElementById('descriptionF').value,
+		YT: document.getElementById('YT').value,
+		price: document.getElementById('priceF').value
+    };
+    localStorage.setItem('formDataAd', JSON.stringify(formDataAd));
+});
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    var savedData = localStorage.getItem('formDataAd');
+
+    if (savedData) {
+        var formDataAd = JSON.parse(savedData);
+		
+		Object.keys(formDataAd).forEach(function(key) {
+			if(formDataAd[key] == 'undefined'){
+				formDataAd[key] = "";
+			}
+		});
+
+        document.getElementById('title').value = formDataAd.title;
+        document.getElementById('version').value = formDataAd.version;
+        document.getElementById('mileage').value = formDataAd.mileage;
+		document.getElementById('vin').value = formDataAd.vin;
+		document.getElementById('engineDisplacement').value = formDataAd.engineDisplacement;
+		document.getElementById('enginePower').value = formDataAd.enginePower;
+		document.getElementById('descriptionF').value = formDataAd.description;
+		document.getElementById('YT').value = formDataAd.YT;
+		document.getElementById('priceF').value = formDataAd.price;
+    }
+});
+
+</script>
 
 
 

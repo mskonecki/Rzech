@@ -479,8 +479,63 @@ class Database
         return $wynik;
     }
 
+    public function isVinUsed(string $VIN) : bool
+    {
+        $sql = $this->connection->prepare('SELECT ad.adStatus, addetails.VIN
+                                        FROM ad LEFT JOIN addetails ON ad.detailsID = addetails.adDetailsID
+                                        WHERE ad.adStatus = 1 AND addetails.VIN = :VIN');
+        $sql->bindParam(':VIN',$VIN);
+
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if(empty($wynik))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public function validatePhoto($picture) : void
+    {
+        if(@is_array(getimagesize($picture)))
+        {
+            //jest git
+        }
+        else{
+            throw new StorageException('Plik nie jest obrazem');
+        }
+    }
+
+    public function validateYtLink(string $url) : bool
+    {
+       $rx = '~
+      ^(?:https?://)?                           # Optional protocol
+       (?:www[.])?                              # Optional sub-domain
+       (?:youtube[.]com/watch[?]v=|youtu[.]be/) # Mandatory domain name (w/ query string in .com)
+       ([^&]{11})                               # Video id of 11 characters as capture group 1
+        ~x'; 
+
+        if (preg_match($rx, $url) == 1)
+        {
+            return true;
+        }
+        return false;
+
+    }
+
     public function CreateAd(array $adData): void
     {
+        if($this->isVinUsed($adData['vin']) == 1)
+        {
+            throw new StorageException('Pojazd z tym numerem VIN jest już w aktywnym ogłoszeniu');
+        }
+        
+        if($this->validateYtLink($adData['videoYT']) == 0)
+        {
+            throw new StorageException('Link nie pochodzi ze strony Youtube');
+        }
+
         try
         {
             //addetails

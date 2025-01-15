@@ -109,6 +109,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
     var savedData = localStorage.getItem('formData');
     if (savedData) {
         var formData = JSON.parse(savedData);
+
+		Object.keys(formData).forEach(function(key) {
+			if(formData[key] == 'undefined'){
+				formData[key] = "";
+			}
+		});
+
         document.getElementById('loginField').value = formData.login;
         document.getElementById('firstname').value = formData.firstname;
         document.getElementById('lastname').value = formData.lastname;

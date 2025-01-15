@@ -169,6 +169,20 @@ class Controller
 
                         $picture = file_get_contents($files['picture']['tmp_name']);
 
+                        try
+                        {
+                            $this->db->validatePhoto($files['picture']['tmp_name']);
+                        }
+                        catch(StorageException $e)
+                        {
+                            if($e->getMessage() == 'Plik nie jest obrazem')
+                            {
+                                $_SESSION['createAdError']['wrongFileType'] = $e->getMessage();
+                            }
+                        }
+                        
+
+
                         $adData = [
                             'adOwner' => $_SESSION['userData']['userID'],
                             'title' => $post['title'],
@@ -196,11 +210,18 @@ class Controller
                         try
                         {
                             $this->db->createAd($adData);
-                            echo '</br>Udało się utworzyć ogłoszenie!';
+                            $_SESSION['createAdSuccess'] = 'Udało się utworzyć ogłoszenie!';
                         }
                         catch(StorageException $e)
                         {
-
+                            if($e->getMessage() == 'Pojazd z tym numerem VIN jest już w aktywnym ogłoszeniu')
+                            {
+                                $_SESSION['createAdError']['vinUsed'] = $e->getMessage();
+                            }
+                            if($e->getMessage() == 'Link nie pochodzi ze strony Youtube')
+                            {
+                                $_SESSION['createAdError']['wrongURL'] = $e->getMessage();
+                            }
                         }
                     }                    
                 break;
