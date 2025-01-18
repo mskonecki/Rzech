@@ -151,7 +151,6 @@ class Controller
                         exit;
                     }
 
-                    $this->renderCreateAddPage();
 
                     if(!empty($post['title']) && !empty($post['brand']) && !empty($post['model']) && !empty($post['productionDate']) && !empty($post['mileage']) 
                         && !empty($post['vin']) && !empty($post['bodyType']) && !empty($post['engineDisplacement']) && !empty($post['enginePower']) 
@@ -169,20 +168,8 @@ class Controller
 
                         $picture = file_get_contents($files['picture']['tmp_name']);
 
-                        try
-                        {
-                            $this->db->validatePhoto($files['picture']['tmp_name']);
-                        }
-                        catch(StorageException $e)
-                        {
-                            if($e->getMessage() == 'Plik nie jest obrazem')
-                            {
-                                $_SESSION['createAdError']['wrongFileType'] = $e->getMessage();
-                            }
-                        }
-                        
 
-
+                                              
                         $adData = [
                             'adOwner' => $_SESSION['userData']['userID'],
                             'title' => $post['title'],
@@ -209,6 +196,8 @@ class Controller
 
                         try
                         {
+                            $this->db->validatePhoto($files['picture']['tmp_name']);
+
                             $this->db->createAd($adData);
                             $_SESSION['createAdSuccess'] = 'Udało się utworzyć ogłoszenie!';
                         }
@@ -218,12 +207,17 @@ class Controller
                             {
                                 $_SESSION['createAdError']['vinUsed'] = $e->getMessage();
                             }
+                            if($e->getMessage() == 'Plik nie jest obrazem')
+                            {
+                                $_SESSION['createAdError']['wrongFileType'] = $e->getMessage();
+                            }
                             if($e->getMessage() == 'Link nie pochodzi ze strony Youtube')
                             {
                                 $_SESSION['createAdError']['wrongURL'] = $e->getMessage();
                             }
                         }
                     }                    
+                    $this->renderCreateAddPage();
                 break;
 
             case 'ad':
