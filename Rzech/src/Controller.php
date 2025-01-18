@@ -265,7 +265,49 @@ class Controller
                     header('Location: index.php?action=Login');
                     exit;
                 }
-                View::myProfileView();
+
+                $get['viewedAds'] = $get['viewedAds'] ?? 'active';
+                $page = (int)($get['page'] ?? 1);
+                $viewedAds = $get['viewedAds'];
+
+                $activeAdNumber = $this->db->countActiveUserAds((int)$_SESSION['userData']['userID']);
+                $blockedAdNumber = $this->db->countBlockedUserAds((int)$_SESSION['userData']['userID']);
+                $closedAdNumber = $this->db->countClosedUserAds((int)$_SESSION['userData']['userID']);
+                $displayedAds = [];
+                $pageCount = 0;
+                if($viewedAds == 'active')
+                {
+                    $displayedAds = $this->db->getActiveUserAds((int)$_SESSION['userData']['userID'],ADS_ON_PAGE,$page);
+                    $pageCount = $this->db->countDisplayedUserAdPages($activeAdNumber,ADS_ON_PAGE);
+                }
+                else if($viewedAds == 'closed')
+                {
+                    $displayedAds = $this->db->getClosedUserAds((int)$_SESSION['userData']['userID'],ADS_ON_PAGE,$page);
+                    $pageCount = $this->db->countDisplayedUserAdPages($closedAdNumber,ADS_ON_PAGE);
+                }
+                else if($viewedAds == 'blocked')
+                {
+                    $displayedAds = $this->db->getBlockedUserAds((int)$_SESSION['userData']['userID'],ADS_ON_PAGE,$page);
+                    $pageCount = $this->db->countDisplayedUserAdPages($blockedAdNumber,ADS_ON_PAGE);
+                }
+                else
+                {
+                    throw new ConfigException('Strona nie istnieje');
+                }
+
+                $pagination = $this->db->getDisplayedUserAdPagination($viewedAds,ADS_ON_PAGE,$page,(int)$_SESSION['userData']['userID']);
+                $data = [
+                    'activeAdNumber' => $activeAdNumber,
+                    'blockedAdNumber' => $blockedAdNumber,
+                    'closedAdNumber' => $closedAdNumber,
+                    'displayedAds' => $displayedAds,
+                    'viewedAds' => $viewedAds,
+                    'pagination' => $pagination,
+                    'pageCount' => $pageCount,
+                    'page' => $page
+                ];
+
+                View::myProfileView($data,$get);
                 break;
 
             case 'logout':

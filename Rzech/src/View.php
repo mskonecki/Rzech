@@ -19,7 +19,7 @@ class View
         echo '<body>';
     }
 
-    public static function myProfileView()
+    public static function myProfileView(array $data,array $get)
     {
         echo '<body>';
         require_once("templates/navbar.php");

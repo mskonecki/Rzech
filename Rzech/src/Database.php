@@ -467,7 +467,7 @@ class Database
 
     public function getBrandModelID(string $brand, string $model)
     {
-        $sql = $this->connection->prepare('SELECT IDBrandModel FROM brandmodel WHERE brand = :brand AND model = :model');
+        $sql = $this->connection->prepare('SELECT IDBrandModel FROM BrandModel WHERE brand = :brand AND model = :model');
 
         $sql->bindParam(':brand',$brand);
         $sql->bindParam(':model',$model);
@@ -481,9 +481,9 @@ class Database
 
     public function isVinUsed(string $VIN) : bool
     {
-        $sql = $this->connection->prepare('SELECT ad.adStatus, addetails.VIN
-                                        FROM ad LEFT JOIN addetails ON ad.detailsID = addetails.adDetailsID
-                                        WHERE ad.adStatus = 1 AND addetails.VIN = :VIN');
+        $sql = $this->connection->prepare('SELECT Ad.adStatus, AdDetails.VIN
+                                        FROM Ad LEFT JOIN AdDetails ON Ad.detailsID = AdDetails.AdDetailsID
+                                        WHERE Ad.adStatus = 1 AND AdDetails.VIN = :VIN');
         $sql->bindParam(':VIN',$VIN);
 
         $sql->execute();
@@ -547,7 +547,7 @@ class Database
             $description = $adData['description'];
             $videoYT = $adData['videoYT'];
 
-            $sql = $this->connection->prepare('INSERT INTO addetails (VIN, gearbox, drivetrain, bodyType, wheel, description, videoYT)
+            $sql = $this->connection->prepare('INSERT INTO AdDetails (VIN, gearbox, drivetrain, bodyType, wheel, description, videoYT)
                                                 VALUES
                                                 (:VIN, :gearbox, :drivetrain, :bodyType, :wheel, :description, :videoYT)');
             
@@ -584,7 +584,7 @@ class Database
             $adStatus = 1;
             $blockStatus = 0;
 
-            $sql = $this->connection->prepare('INSERT INTO ad (title, adOwner, brandmodelID, version, productionDate, mileage, engineDisplacement, fuel, enginePower, 
+            $sql = $this->connection->prepare('INSERT INTO Ad (title, adOwner, brandmodelID, version, productionDate, mileage, engineDisplacement, fuel, enginePower, 
                                                     picture, price, priceNegotiable, adStatus, blockStatus, detailsID)
                                                 VALUES
                                                 (:title, :adOwner, :brandmodelID, :version, :productionDate, :mileage, :engineDisplacement, :fuel, :enginePower, 
@@ -699,6 +699,221 @@ class Database
             echo '<br/>';
             throw new StorageException('Creating user error');
         }
+    }
+
+
+    public function countActiveUserAds(int $ownerID) : int
+    {
+        $sql = $this->connection->prepare("SELECT COUNT(*) AS 'Ilosc'
+                                           FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE blockStatus = 0 AND adStatus = 1 AND adOwner = $ownerID");
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+        $wynik = (int)$wynik['Ilosc'];
+
+        return $wynik;
+    }
+
+    public function getActiveUserAds(int $ownerID,int $adsOnPage, int $page) : array
+    {
+        if($adsOnPage <=0 || $page<=0)
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+
+        $adQuantity = $this->countActiveUserAds($ownerID);
+
+        if($adQuantity == 0 && $page == 1)
+        {
+            return ['noDisplayedUserAdsFlag' => 'Brak dodanych ogłoszeń'];
+        }
+
+
+        $limit = $adsOnPage;
+        $offset = ($page-1)*$adsOnPage;
+        $wynik = [];
+
+
+        
+        $sql = $this->connection->prepare("SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price
+                                           FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE blockStatus = 0 AND adStatus = 1 AND adOwner = $ownerID
+                                           LIMIT $limit OFFSET $offset");
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+            
+        if(empty($wynik))
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+        return $wynik;
+    }
+
+    public function countClosedUserAds(int $ownerID) : int
+    {
+        $sql = $this->connection->prepare("SELECT COUNT(*) AS 'Ilosc'
+                                           FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE blockStatus = 0 AND adStatus = 0 AND adOwner = $ownerID");
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+        $wynik = (int)$wynik['Ilosc'];
+
+        return $wynik;
+    }
+
+    public function getClosedUserAds(int $ownerID,int $adsOnPage, int $page) : array
+    {
+        if($adsOnPage <=0 || $page<=0)
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+
+        $adQuantity = $this->countClosedUserAds($ownerID);
+
+        if($adQuantity == 0 && $page == 1)
+        {
+            return ['noDisplayedUserAdsFlag' => 'Brak dodanych ogłoszeń'];
+        }
+
+
+        $limit = $adsOnPage;
+        $offset = ($page-1)*$adsOnPage;
+        $wynik = [];
+
+
+        
+        $sql = $this->connection->prepare("SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price
+                                           FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE blockStatus = 0 AND adStatus = 0 AND adOwner = $ownerID
+                                           LIMIT $limit OFFSET $offset");
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+            
+        if(empty($wynik))
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+        return $wynik;
+    }
+
+    public function countBlockedUserAds(int $ownerID) : int
+    {
+        $sql = $this->connection->prepare("SELECT COUNT(*) AS 'Ilosc'
+                                           FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE blockStatus = 1 AND adOwner = $ownerID");
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+        $wynik = (int)$wynik['Ilosc'];
+
+        return $wynik;
+    }
+
+    public function getBlockedUserAds(int $ownerID,int $adsOnPage, int $page) : array
+    {
+        if($adsOnPage <=0 || $page<=0)
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+
+        $adQuantity = $this->countBlockedUserAds($ownerID);
+
+        if($adQuantity == 0 && $page == 1)
+        {
+            return ['noDisplayedUserAdsFlag' => 'Brak dodanych ogłoszeń'];
+        }
+
+
+        $limit = $adsOnPage;
+        $offset = ($page-1)*$adsOnPage;
+        $wynik = [];
+
+
+        
+        $sql = $this->connection->prepare("SELECT adID,title,version,productionDate,mileage,fuelName,enginePower,location,picture,price
+                                           FROM Ad LEFT JOIN Fuel ON (fuel = fuelID) 
+                                           LEFT JOIN Advertiser ON (adOwner = userID)
+                                           WHERE blockStatus = 1 AND adOwner = $ownerID
+                                           LIMIT $limit OFFSET $offset");
+        $sql->execute();
+        $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);
+            
+        if(empty($wynik))
+        {
+            throw new StorageException('Strona nie istnieje');
+        }
+        return $wynik;
+    }
+
+
+    public function countDisplayedUserAdPages(int $numberOfAds,int $adsOnPage) : int
+    {
+        if($numberOfAds <= 0 || $adsOnPage <=0)
+        {
+            return 0;
+        }
+
+        $count = $numberOfAds/$adsOnPage;
+
+        if($numberOfAds%$adsOnPage == 0)
+        {
+            return (int)$count;
+        }
+
+        return (int)$count+1;
+    }
+
+    public function getDisplayedUserAdPagination(string $viewedAds,int $adsOnPage,int $page,int $ownerID) : array
+    {
+
+        if($adsOnPage <=0 || $page<=0)
+        {
+            throw new StorageException('Nie udało się pobrać paginacji. Skontaktuj się z administratorem!');
+        }
+
+        $adCount = 0;
+        if($viewedAds == 'active')
+        {
+            $adCount = $this->countActiveUserAds($ownerID);
+        }
+        else if($viewedAds == 'blocked')
+        {
+            $adCount = $this->countBlockedUserAds($ownerID);
+        }
+        else if($viewedAds = 'closed')
+        {
+            $adCount = $this->countBlockedUserAds($ownerID);
+        }
+
+        $pageCount = $this->countDisplayedUserAdPages($adCount,$adsOnPage);
+
+        $pagination = [];
+        
+        $i = $page;
+        $j = 5;
+        while($i>1 && $j>1)
+        {
+            $i--;
+            $j--;
+
+        }
+        
+
+        
+        $j=10;
+
+        while($i<=$pageCount && $j>1)
+        {
+            $pagination[] = $i;
+            $i++;
+            $j--;
+        }
+        
+        return $pagination;
     }
           
 }

@@ -116,18 +116,6 @@
 
 /*do podglądu profilu */
 
-.profileBaner
-{
-    background-color: #668EAB;
-    width: 100%;
-    height: 159px;
-    padding-top: 53px;
-    color: white;
-    min-height: fit-content;
-    font-size: 64px;
-    text-indent: 5%;
-}
-
 .profileDataContainer
 {
     background-color: #DDE5F4;
@@ -176,3 +164,92 @@
 {
     margin-bottom: 8px;
 }
+
+.profileBaner
+{
+    background-color: #668EAB;
+    width: 100%;
+    height: 159px;
+    padding-top: 53px;
+    color: white;
+    min-height: fit-content;
+    font-size: 64px;
+    text-indent: 5%;
+}
+
+.adsTypeBaner
+{
+    background-color: #DDE5F4;
+    width: 100%;
+    height: 159px;
+    padding-top: 53px;
+    color: white;
+    min-height: fit-content;
+    font-size: 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.adsTypeLinks
+{
+    margin-left: 5%;
+}
+
+.adsLinkActive
+{
+    text-decoration: solid;
+}
+
+.adsTypeLinks a
+{
+    color: black;
+    font-size: 40px;
+    margin-left: 30px;
+    text-decoration: none;
+}
+
+.adsTypeEmpty
+{
+    background-color: #DDE5F4;
+    width: 100%;
+    padding-top: 53px;
+    color:black;
+    min-height: fit-content;
+    font-size: 64px;
+    text-indent: 5%;
+}
+
+
+
+
+
+@media screen and (max-width: 1050px) {
+
+    .profileData
+    {
+        width: 98%;
+    }
+
+    .adsTypeLinks
+    {
+        margin-left: 0%;
+        text-align: center;
+    }
+
+    .adsTypeLinks a
+    {
+        margin-left: 0px;
+        margin-right: 20px;
+        margin-bottom: 60px;
+        font-size: 20px;
+    }
+
+    .adsTypeEmpty
+    {
+        text-indent: 0;
+        font-size: 48px;
+    }
+
+}
+
