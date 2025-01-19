@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+// error_reporting(E_ALL);
+// ini_set('display_errors', '1');
 
 require_once("config/Exceptions/StorageException.php");
 require_once("config/Exceptions/ConfigException.php");
@@ -71,7 +71,9 @@ class Database
     {
         if(empty($filters))
         {
-            $sql = $this->connection->prepare('SELECT COUNT(*) AS Ilosc FROM Ad');
+            $sql = $this->connection->prepare('SELECT COUNT(*) AS Ilosc FROM Ad
+                                               WHERE adStatus = 1
+                                               AND blockStatus = 0');
 
             $sql->execute();
             $wynik = $sql->fetch(PDO::FETCH_ASSOC);
@@ -106,7 +108,8 @@ class Database
           LEFT JOIN BodyType ON(bodyType = bodyTypeID) LEFT JOIN Fuel ON (fuel = fuelID)
           WHERE brand = :brand AND model = :model AND bodyTypeName = :bodyType
           AND fuelName = :fuel AND ProductionDate = :productionDate
-          AND Price BETWEEN :priceFloor AND :priceRoof"
+          AND Price BETWEEN :priceFloor AND :priceRoof
+          AND adStatus = 1 AND blockStatus = 0"
           );
         
           
@@ -190,6 +193,7 @@ class Database
                                            WHERE brand = :brand AND model = :model AND bodyTypeName = :bodyType
                                            AND fuelName = :fuel AND ProductionDate = :productionDate
                                            AND Price BETWEEN :priceFloor AND :priceRoof
+                                           AND blockStatus = 0 AND adStatus = 1
                                            LIMIT $limit OFFSET $offset");
 
         
@@ -274,7 +278,8 @@ class Database
                                            WHERE EXISTS 
                                            (SELECT brandModelID 
                                            FROM Ad 
-                                           WHERE brandModelID = IDBrandModel)');
+                                           WHERE brandModelID = IDBrandModel
+                                           AND adStatus = 1 AND blockStatus = 0)');
         
         $sql->execute();
         $wynik = $sql->fetchAll(PDO::FETCH_ASSOC);

@@ -2,8 +2,8 @@
 
 #use PDO;
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+// error_reporting(E_ALL);
+// ini_set('display_errors', '1');
 
 $config = require_once("src/config/config.php");
 $config = $config['db'];
@@ -12,7 +12,7 @@ $database = $config['database'];
 $host = $config['host'];
 $dsn = "mysql:dbname=$database;host=$host";
 
-$get['group_name'] = $_GET['group_name'] ?? 'none';
+$get['group_name'] = htmlentities($_GET['group_name']) ?? 'none';
 
 try
 {
@@ -20,12 +20,12 @@ try
     [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
-    $sql = $connection->prepare('SELECT model
+    $sql = $connection->prepare('SELECT DISTINCT model
                                  FROM BrandModel
                                  WHERE EXISTS (SELECT brandModelID 
                                                FROM Ad 
-                                               WHERE brandModelID = IDBrandModel)
-                                               AND brand = :brand');
+                                               WHERE brandModelID = IDBrandModel
+                                               AND brand = :brand AND adStatus = 1 AND blockStatus = 0)');
                                 
         $sql->bindParam(':brand',$get['group_name']);
         $sql->execute();

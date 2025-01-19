@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace App;
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+// error_reporting(E_ALL);
+// ini_set('display_errors', '1');
 
 require_once("config/Exceptions/StorageException.php");
 require_once("config/Exceptions/ConfigException.php");
@@ -401,7 +401,11 @@ class Controller
         $bodyTypeList = $this->db->getBodyTypeList();
         $filters = [];
 
-        if(!empty($post['brand-field']) && !empty($post['model-field']))
+        if(!empty($post['brand-field'] ?? []) && empty($post['bodyType-field'] ?? []))
+        {
+
+        }
+        if(!empty($post['bodyType-field']))
         {
             $filters = [
                 'brand' => $post['brand-field'] ?: 'Inne',
@@ -417,6 +421,18 @@ class Controller
         $pageNumber = $get['page'] ?? 1;
         $pageNumber = (int)$pageNumber;
         $pageCount = $this->db->countPages($filters,ADS_ON_PAGE);
+
+        if($pageCount == 0)
+        {
+            $_SESSION['emptyResults'] = true;
+            $filters = [];
+            $pageCount = $this->db->countPages($filters,ADS_ON_PAGE);
+        }
+
+        if($pageNumber > $pageCount)
+        {
+            throw new StorageException('Strona nie istnieje!');
+        }
 
         $ads = $this->db->getAdsPage($filters,ADS_ON_PAGE,$pageNumber);
         $pagination = $this->db->getAdPagination($filters,ADS_ON_PAGE,$pageNumber);
