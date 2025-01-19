@@ -360,7 +360,7 @@ class Database
 
     public function getAd(int $adID)
     {
-        $sql = $this->connection->prepare("SELECT adID,price,title,brand,model,version,engineDisplacement,enginePower,gearboxName,bodyTypeName,fuelName,drivertrainName,mileage,productionDate,VIN,videoYT,login,firstName,lastName,
+        $sql = $this->connection->prepare("SELECT adID,adOwner,price,title,brand,model,version,engineDisplacement,enginePower,gearboxName,bodyTypeName,fuelName,drivertrainName,mileage,productionDate,VIN,videoYT,login,firstName,lastName,
                                            accountType,location,phone,email,registrationDate,picture,description,VIN
                                            FROM Ad LEFT JOIN Advertiser ON (adOwner = userID) LEFT JOIN BrandModel ON (brandmodelID = IDbrandmodel)
                                            LEFT JOIN Fuel ON (fuel = fuelID) LEFT JOIN AdDetails ON (detailsID = adDetailsID)
@@ -481,9 +481,9 @@ class Database
 
     public function isVinUsed(string $VIN) : bool
     {
-        $sql = $this->connection->prepare('SELECT Ad.adStatus, AdDetails.VIN
+        $sql = $this->connection->prepare('SELECT Ad.adStatus, Ad.blockStatus, AdDetails.VIN
                                         FROM Ad LEFT JOIN AdDetails ON Ad.detailsID = AdDetails.AdDetailsID
-                                        WHERE Ad.adStatus = 1 AND AdDetails.VIN = :VIN');
+                                        WHERE Ad.adStatus = 1 AND Ad.blockStatus = 0 AND AdDetails.VIN = :VIN');
         $sql->bindParam(':VIN',$VIN);
 
         $sql->execute();
@@ -915,7 +915,64 @@ class Database
         
         return $pagination;
     }
-          
+    
+    public function closeAd(int $adID) : void
+    {
+        $sql = $this->connection->prepare('UPDATE Ad SET adStatus = 0 WHERE adID = :adID');
+            
+        $sql->bindParam(':adID',$adID);
+            
+
+        $sql->execute();
+    }
+
+    public function checkIfAdOwner(int $adID, int $adOwner) : bool
+    {
+        $sql = $this->connection->prepare('SELECT adID, adOwner
+                                        FROM Ad WHERE adID = :adID');
+        $sql->bindParam(':adID',$adID);
+
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if($wynik['adOwner'] == $adOwner)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public function checkIfAdActive(int $adID) : bool
+    {
+        $sql = $this->connection->prepare('SELECT adID, adStatus
+                                        FROM Ad WHERE adID = :adID');
+        $sql->bindParam(':adID',$adID);
+
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if($wynik['adStatus'] == 1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public function checkIfAdNotBlocked(int $adID) : bool
+    {
+        $sql = $this->connection->prepare('SELECT adID, blockStatus
+                                        FROM Ad WHERE adID = :adID');
+        $sql->bindParam(':adID',$adID);
+
+        $sql->execute();
+        $wynik = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if($wynik['blockStatus'] == 0)
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 

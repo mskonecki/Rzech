@@ -253,3 +253,15 @@
 
 }
 
+/*do close ad */
+
+#checkboxCloseAd {
+    box-sizing: border-box;
+    background-color: #B1C4D8;
+    width: 100%;
+    padding: 10px;
+    border-width: 2px;
+    margin: 20px;
+    width: 10px;
+    transform: scale(3);
+}

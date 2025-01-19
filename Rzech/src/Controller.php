@@ -250,7 +250,84 @@ class Controller
                     header('Location: index.php?action=Ads&page=1');
                     exit;
                 }
-                View::adPageView($searchData,$post);
+                //do przycisku
+
+                if($this->db->checkIfAdNotBlocked((int)$searchData['adData']['adID']) == true)
+                {
+                    if(isset($_SESSION['userData']) && $this->db->checkIfAdOwner((int)$searchData['adData']['adID'], (int)$_SESSION['userData']['userID']))
+                    {
+                        if($this->db->checkIfAdActive((int)$searchData['adData']['adID']) == true)
+                        {
+                            $przycisk = 'closeAd';
+                        }
+                        else
+                        {
+                            $przycisk = 'none';
+                        }
+                    }
+                    else
+                    {
+                        $przycisk = 'report';
+                    }
+                }
+                else
+                {
+                    $przycisk = 'none';
+                }
+
+
+                //koniec
+                View::adPageView($searchData,$post,$przycisk);
+                break;
+
+            case 'closeAd':
+                if(!isset($get['adID']))
+                {
+                    throw new ConfigException('Strona nie istnieje');
+                }
+
+                if(empty($_SESSION['userData'] ?? []))
+                {
+                    header('Location: index.php?action=Login');
+                    exit;
+                }
+
+                $adID = (int)$get['adID'];
+                $adData = $this->db->getAd($adID);
+
+                $searchData = [
+                    'adData' => $adData
+                ];
+
+                if($this->db->checkIfAdOwner((int)$searchData['adData']['adID'],(int)$_SESSION['userData']['userID']) == false)
+                {
+                    header('Location: index.php?action=myProfile');
+                    exit;
+                }
+
+                if($this->db->checkIfAdNotBlocked((int)$searchData['adData']['adID']) == false || $this->db->checkIfAdActive((int)$searchData['adData']['adID']) == false)
+                {
+                    header('Location: index.php?action=myProfile');
+                    exit;
+                }
+
+
+                if(isset($post['checkboxCloseAd']))
+                {
+                    try
+                    {
+                        $this->db->closeAd((int)$searchData['adData']['adID']);
+                        unset($post['checkboxCloseAd']);
+                        $this->db->alert('Udało się zamknąć ogłoszenie');
+                        header('Location: index.php?action=myProfile');
+                    }
+                    catch(StorageException $e)
+                    {
+                        echo $e;
+                    }
+                }
+
+                View::closeAdView($searchData,$post);
                 break;
 
             case 'myProfile':

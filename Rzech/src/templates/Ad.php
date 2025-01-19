@@ -104,11 +104,33 @@
                 <div id="alertArea1">
                         <a href="#">Wideoprezentacja na YouTube</a>
                     <div id="alertArea2">
-                        <a href="#">
-                            <div id="alertButton">
-                                Zgłoś naruszenie
-                            </div>
-                        </a>
+                        <?php
+                            if($przycisk == 'closeAd')
+                            {
+                                echo '  <a href="?action=closeAd&adID=' . $searchData['adData']['adID'] . '">
+                                            <div id="alertButton">
+                                                Zamknij ogłoszenie
+                                            </div>
+                                        </a>';
+                            }
+                            elseif($przycisk == 'report')
+                            {
+                                echo '  <a href="#">
+                                            <div id="alertButton">
+                                                Zgłoś ogłoszenie
+                                            </div>
+                                        </a>';
+                            }
+                            elseif($przycisk == 'none')
+                            {
+                                //nic nie wyświetlaj
+                            }
+                            else
+                            {
+                                echo 'Sumtin Wen Wong';
+                            }
+
+                        ?>                
                     </div>
                 </div>
             </div>
