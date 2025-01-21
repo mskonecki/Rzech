@@ -46,8 +46,8 @@
         </div>
     </div>
 
-    <?php if(!isset($post['bodyType-field']) && (isset($post['brand-field']) || isset($post['priceFloor-field']))
-    || isset($post['priceRoof-field'])):?>
+   <?php if(((!isset($post['bodyType-field']) || !isset($post['priceFloor-field']))
+    || !isset($post['priceRoof-field'])) && isset($post['brand-field'])):?>
     <div id="error-message" style="color: red; text-align:center; 
     background-color: #668EAB; padding-bottom: 10px;">
         Należy podać wszystkie dane do wyszukiwarki!
