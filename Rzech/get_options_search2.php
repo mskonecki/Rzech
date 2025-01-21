@@ -12,7 +12,7 @@ $database = $config['database'];
 $host = $config['host'];
 $dsn = "mysql:dbname=$database;host=$host";
 
-$get['group_name'] = htmlenties($_GET['group_name']) ?? 'none';
+$get['group_name'] = htmlentities($_GET['group_name']) ?? 'none';
 
 try
 {
@@ -20,7 +20,7 @@ try
     [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
-    $sql = $connection->prepare('SELECT DISTINCT model
+    $sql = $connection->prepare('SELECT model
                                  FROM BrandModel
                                  WHERE brand = :brand');
                                 
